@@ -9,10 +9,12 @@ import com.google.firebase.ktx.Firebase
 
 class MainViewModelLogin: ViewModel() {
     var lista: MutableList<Int> = mutableListOf()
-    var auth: FirebaseAuth = Firebase.auth
-    var db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    /*var auth: FirebaseAuth
+    var db: FirebaseFirestore*/
 
     init {
+       /* db = FirebaseFirestore.getInstance()
+        auth = Firebase.auth*/
         for(i in 0..100) {
             lista.add(i)
         }

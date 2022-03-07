@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "878650794397",
+    "project_id": "class-manager-58dbf",
+    "storage_bucket": "class-manager-58dbf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878650794397:android:137fe1ee5c23da6d894f74",
+        "android_client_info": {
+          "package_name": "me.saine.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "878650794397-ol1uhfd42pepgvgqfrgoka83b9qthvsf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvzQHfCJ_Dp-4CH4CeKvu88nsYD4lFG1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "878650794397-ol1uhfd42pepgvgqfrgoka83b9qthvsf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

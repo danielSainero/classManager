@@ -110,12 +110,13 @@ fun MainLogin(
                                     Text(text = "Iniciar sesión")
                                 },
                                 onClick = {
+                                    /*
                                     signIn(
                                         email = emailText.value,
                                         password =passwordText.value,
                                         mainViewModelLogin = mainViewModelLogin,
                                         context = context
-                                    )
+                                    )*/
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -172,7 +173,7 @@ fun MainLogin(
         },
     )
 }
-
+/*
 
 private fun signIn(
     email: String,
@@ -191,7 +192,7 @@ private fun signIn(
                 //Toast.makeText(baseContext, "El usuario o contraseña no son válidos.", Toast.LENGTH_LONG).show()
             }
         }
-}
+}*/
 /*
 public override fun onStart() {
     super.onStart()
