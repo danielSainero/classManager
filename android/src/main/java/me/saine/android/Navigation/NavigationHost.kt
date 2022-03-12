@@ -16,10 +16,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.classmanegerandroid.Views.Login.MainLogin
 import com.example.classmanegerandroid.Views.Login.MainViewModelLogin
 import com.example.classmanegerandroid.Views.MainRegister
+import me.saine.android.Views.MainAppActivity.MainAppView
+import me.saine.android.Views.MainAppActivity.MainViewModelMainAppView
+import me.saine.android.Views.Register.MainViewModelRegister
 
 @Composable
 fun NavigationHost(
-    mainViewModelLogin: MainViewModelLogin
+    mainViewModelLogin: MainViewModelLogin,
+    mainViewModelRegister: MainViewModelRegister,
+    mainViewModelMainAppView: MainViewModelMainAppView
 ) {
 
     var navController: NavHostController
@@ -38,8 +43,17 @@ fun NavigationHost(
         }
         composable(route = Destinations.Register.route) {
            MainRegister(
-               navController = navController
+               navController = navController,
+               mainViewModelRegister = mainViewModelRegister
            )
+        }
+        composable(route = Destinations.MainAppView.route) {
+            //mainViewModelMainAppView.getCourses()
+            //mainViewModelMainAppView.myUser()
+            MainAppView(
+                navController = navController,
+                mainViewModelMainAppView = mainViewModelMainAppView
+            )
         }
 
     }

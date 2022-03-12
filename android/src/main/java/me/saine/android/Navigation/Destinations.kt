@@ -4,5 +4,6 @@ sealed class Destinations(
     val route: String
 ) {
     object Login: Destinations(route = "Views.Login.Login")
-    object Register: Destinations(route = "Views.Register")
+    object Register: Destinations(route = "Views.Register.Register")
+    object MainAppView: Destinations(route = "Views.MainAppActivity.MainAppView")
 }

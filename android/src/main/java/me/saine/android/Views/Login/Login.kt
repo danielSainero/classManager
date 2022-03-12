@@ -1,9 +1,7 @@
 package com.example.classmanegerandroid.Views.Login
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
-import android.view.KeyEvent
 import android.widget.Toast
 import coil.compose.rememberImagePainter
 import androidx.compose.foundation.Image
@@ -17,18 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.classmanegerandroid.Navigation.Destinations
-import com.example.classmanegerandroid.*
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 
 @Composable
 fun MainLogin(
@@ -36,8 +27,8 @@ fun MainLogin(
     mainViewModelLogin: MainViewModelLogin
 ) {
     var context = LocalContext.current
-    var emailText = remember{ mutableStateOf("") }
-    var passwordText = remember{ mutableStateOf("") }
+    var emailText = remember{ mutableStateOf("test@gmail.com") }
+    var passwordText = remember{ mutableStateOf("11111111") }
 
 
     Scaffold(
@@ -65,6 +56,9 @@ fun MainLogin(
                                     .height(250.dp)
                                     .width(450.dp)
                                     .padding(30.dp)
+                                    .clickable {
+                                        navController.navigate(Destinations.MainAppView.route)
+                                    }
                             )
                         }
                         item {
@@ -110,13 +104,14 @@ fun MainLogin(
                                     Text(text = "Iniciar sesión")
                                 },
                                 onClick = {
-                                    /*
+
                                     signIn(
                                         email = emailText.value,
                                         password =passwordText.value,
                                         mainViewModelLogin = mainViewModelLogin,
-                                        context = context
-                                    )*/
+                                        context = context,
+                                        navController = navController
+                                    )
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -173,35 +168,44 @@ fun MainLogin(
         },
     )
 }
-/*
+
 
 private fun signIn(
     email: String,
     password: String,
     mainViewModelLogin: MainViewModelLogin,
-    context: Context
+    context: Context,
+    navController: NavController
 ) {
     mainViewModelLogin.auth.signInWithEmailAndPassword(email, password)
         .addOnCompleteListener() { task ->
             if (task.isSuccessful) {
                 Log.d("Inicio de sesión", "Se ha iniciado la sesión")
-                val user = mainViewModelLogin.auth.currentUser
-               /* reload()*/
+                Toast.makeText(context,"Usted se ha logeado correctamente",Toast.LENGTH_SHORT).show()
+                mainViewModelLogin.saveCurrentUser() {
+                    reload(
+                        navController = navController
+                    )
+                }
+
             } else {
                 Log.w("Inicio de sesión", "No se ha podido iniciar la sesión", task.exception)
-                //Toast.makeText(baseContext, "El usuario o contraseña no son válidos.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "El usuario o contraseña no son válidos.", Toast.LENGTH_LONG).show()
             }
         }
-}*/
-/*
-public override fun onStart() {
-    super.onStart()
+}
+
+@Override
+fun onStart() {
+    onStart()
+    /*
     val user = auth.currentUser
     if(user != null){
         reload();
-    }
+    }*/
 }
 
+/*
 private fun setInformationUser() {
     db.collection("users").document(auth.currentUser?.uid.toString())
         .set(
@@ -214,11 +218,14 @@ private fun setInformationUser() {
             )
         )
 }*/
-/*
-private fun reload() {
-    this.startActivity(Intent(this, MainActivity::class.java))
+
+private fun reload(
+    navController: NavController
+) {
+    navController.navigate(Destinations.MainAppView.route)
 }
 
+/*
 private fun allUsers() {
     var tmp: Boolean = false
 
