@@ -2,7 +2,7 @@ package me.saine.android.Views.MainAppActivity
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,15 +18,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import com.example.classmanegerandroid.Navigation.Destinations
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -37,6 +41,7 @@ import me.saine.android.dataClasses.Class
 
 private lateinit var database: DatabaseReference
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainAppView(
     navController: NavController,
@@ -47,14 +52,15 @@ fun MainAppView(
     val searchWidgetState by mainViewModelMainAppView.searchWidgetState
     val searchTextState by mainViewModelMainAppView.searchTextState
     val createItem = remember { mutableStateOf(false) }
-
+    val aplicateFilter = remember { mutableStateOf(true) }
+    var filter: String = ""
 
 
     val context = LocalContext.current
     val allCourses = remember { mutableListOf<Course>() }
     val allClasses = remember { mutableListOf<Class>() }
     var (generateCourses,onValueChangeGenerateCouses) = remember { mutableStateOf(false) }
-    getCourses(mainViewModelMainAppView,onValueChangeGenerateCouses)
+    //getCourses(mainViewModelMainAppView,onValueChangeGenerateCouses)
     /*val database = Firebase.database
     val myRef = database.getReference("users")*/
 
@@ -69,6 +75,9 @@ fun MainAppView(
                  searchTextState = searchTextState,
                  onTextChange = {
                      mainViewModelMainAppView.updateSearchTextState(newValue = it)
+                     aplicateFilter.value = false
+                     filter = it.lowercase()
+                     aplicateFilter.value = true
                  },
                  onCloseClicked = {
                      mainViewModelMainAppView.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
@@ -94,20 +103,23 @@ fun MainAppView(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Text(text = "Crear clase")
+                            Text(text = "Crear curso")
                             Spacer(modifier = Modifier.padding(5.dp))
                             FloatingActionButton(
                                 backgroundColor = MaterialTheme.colors.primary,
                                 modifier = Modifier.size(miniFabSize),
                                 content = {
                                     Icon(
-                                        imageVector = Icons.Filled.Search,
+                                        painter = rememberAsyncImagePainter(
+                                            model = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Fschool_white.png?alt=media&token=e393aacc-eb7e-45f3-8e9a-6e1eaefb7411"
+                                        ),
                                         contentDescription = "Search Icon",
                                         tint = Color.White
                                     )
                                 },
                                 onClick = {
                                     createItem.value = false
+                                    navController.navigate(Destinations.CreateCourse.route)
                                 }
                             )
                         }
@@ -117,19 +129,22 @@ fun MainAppView(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Text(text = "Crear curso")
+                            Text(text = "Crear clase")
                             Spacer(modifier = Modifier.padding(5.dp))
                             FloatingActionButton(
                                 backgroundColor = MaterialTheme.colors.primary,
                                 modifier = Modifier.size(miniFabSize),
                                 content = {
-                                   /* Icon(
-                                        painter = mainViewModelMainAppView.storage.reference.child("appImage/${}"),
-                                        contentDescription = "Search Icon",
+                                    Icon(
+                                        painter = rememberAsyncImagePainter(
+                                            model = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Fclass_white.png?alt=media&token=c3091fa8-b1b2-4969-90a8-1e2f09f3d856"
+                                        ),
+                                        contentDescription = "Class",
                                         tint = Color.White
-                                    )*/
+                                    )
                                 },
                                 onClick = {
+                                    navController.navigate(Destinations.CreateClass.route)
                                     createItem.value = false
                                 }
                             )
@@ -140,10 +155,10 @@ fun MainAppView(
                     FloatingActionButton(
                         backgroundColor = MaterialTheme.colors.primary,
                         content = {
-                            Text(text = "+")
+                            Text(text = if (createItem.value) "-" else "+")
                         },
                         onClick = {
-                            createItem.value = true
+                            createItem.value = if (createItem.value) false else true
                         }
                     )
                 }
@@ -183,8 +198,6 @@ fun MainAppView(
                             }
                         }
                     )
-
-
                 }
             )
         },
@@ -205,32 +218,64 @@ fun MainAppView(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
                     LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.5f)
+                            .border(BorderStroke(2.dp, Color.LightGray)),
                         content = {
-                            item {
-                                Text(text = "Mis cursos")
+                            stickyHeader {
+                                Text(
+                                    text = "Mis cursos",
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 14.sp,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.caption,
+                                    modifier = Modifier
+                                        .background(Color.White)
+                                        .padding(16.dp)
+                                        .fillMaxWidth()
+                                )
                             }
 
                             itemsIndexed(CurrentUser.myCourses) { index, item ->
-                                itemCourse(
-                                    course = item.name,
-                                    navController = navController
-                                )
+                                if (aplicateFilter.value)
+                                if (item.name.lowercase().contains(filter)) {
+                                    itemCourse(
+                                        course = item.name,
+                                        onClick = {navController.navigate("${Destinations.Course.route}/${item.id}")}
+                                    )
+                                }
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.padding(10.dp))
                     LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .border(BorderStroke(2.dp, Color.LightGray)),
                         content = {
-                            item {
-                                Text(text = "Mis clases")
-                            }
-                            itemsIndexed(CurrentUser.myClasses) { index, item ->
-                                itemCourse(
-                                    course = item.name,
-                                    navController = navController
+                            stickyHeader {
+                                Text(
+                                    text = "Mis Clases",
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 14.sp,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.caption,
+                                    modifier = Modifier
+                                        .background(Color.White)
+                                        .padding(16.dp)
+                                        .fillMaxWidth()
                                 )
                             }
-
+                            itemsIndexed(CurrentUser.myClasses) { index, item ->
+                                if (aplicateFilter.value)
+                                if (item.name.lowercase().contains(filter)) {
+                                    itemCourse(
+                                        course = item.name,
+                                        onClick = {navController.navigate(Destinations.Class.route)}
+                                    )
+                                }
+                            }
                         }
                     )
                 }
@@ -388,6 +433,17 @@ fun SearchAppBar(
 }
 
 @Composable
+fun MyButton() {
+    val context = LocalContext.current
+    val intent = remember { Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/")) }
+
+    Button(onClick = { context.startActivity(intent) }) {
+        Text(text = "Navigate to Google!")
+    }
+}
+
+/*
+@Composable
 fun getCourses(
     mainViewModelMainAppView: MainViewModelMainAppView,
     generateCourses: (Boolean) -> Unit
@@ -401,6 +457,7 @@ fun getCourses(
                     name = document.get("name") as String,
                     classes = document.get("classes") as MutableList<String>,
                     admins = document.get("admins") as MutableList<String>,
+                    description = document.get("description") as String
                 )
             )
         }
@@ -420,18 +477,7 @@ fun getMyCourses(mainViewModelMainAppView: MainViewModelMainAppView) {
     }
 }
 
-@Composable
-fun MyButton() {
-    val context = LocalContext.current
-    val intent = remember { Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/")) }
 
-    Button(onClick = { context.startActivity(intent) }) {
-        Text(text = "Navigate to Google!")
-    }
-}
-
-
-/*
 fun getClasses(
     mainViewModelMainAppView: MainViewModelMainAppView,
     allClasses: MutableList<Class>

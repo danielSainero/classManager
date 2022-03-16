@@ -1,8 +1,13 @@
 package com.example.classmanegerandroid.Views.Login
 
+import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import coil.compose.rememberImagePainter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,19 +21,46 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.navArgument
 import com.example.classmanegerandroid.Navigation.Destinations
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
+import me.saine.android.Classes.CurrentUser.Companion.auth
+import me.saine.android.R.string.default_web_client_id
+
+fun Context.getActivity(): AppCompatActivity? {
+    var currentContext = this
+    while (currentContext is ContextWrapper) {
+        if (currentContext is AppCompatActivity) {
+            return currentContext
+        }
+        currentContext = currentContext.baseContext
+    }
+    return null
+}
 
 @Composable
 fun MainLogin(
     navController: NavController,
     mainViewModelLogin: MainViewModelLogin
 ) {
-    var context = LocalContext.current
-    var emailText = remember{ mutableStateOf("test@gmail.com") }
-    var passwordText = remember{ mutableStateOf("11111111") }
+    val context = LocalContext.current
+    val activity = context as Activity
+    val loginWithGoogle = remember { mutableStateOf(false) }
+    val emailText = remember{ mutableStateOf("test@gmail.com") }
+    val passwordText = remember{ mutableStateOf("11111111") }
+    if (loginWithGoogle.value){
+        signInWithGoogle(
+            activity = activity
+        )
+    }
 
 
     Scaffold(
@@ -49,7 +81,7 @@ fun MainLogin(
                         item {
                             Image(
                                 painter = rememberImagePainter(
-                                    data = "https://www.psicoactiva.com/wp-content/uploads/puzzleclopedia/Libros-codificados-300x262.jpg"
+                                    data = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Flogo.png?alt=media&token=a9d234bf-a791-44cd-ad29-fd18b54f488e"
                                 ),
                                 contentDescription = "Logo",
                                 modifier = Modifier
@@ -134,6 +166,8 @@ fun MainLogin(
                                 },
                                 onClick = {
                                     //Comprobar inicio de sesión con google
+                                    loginWithGoogle.value = true
+
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -198,13 +232,65 @@ private fun signIn(
 @Override
 fun onStart() {
     onStart()
-    /*
+
     val user = auth.currentUser
     if(user != null){
-        reload();
-    }*/
+       // reload();
+    }
+    // Check if user is signed in (non-null) and update UI accordingly.
+    val currentUser = auth.currentUser
+    //updateUI(currentUser)
 }
 
+@Composable
+fun signInWithGoogle(
+    activity: Activity
+){
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(stringResource(default_web_client_id))
+        .requestEmail()
+        .build()
+
+    val googleSignInClient: GoogleSignInClient = GoogleSignIn.getClient(activity, gso)
+    val signInIntent = googleSignInClient.signInIntent
+    activity.startActivityForResult(signInIntent, 1)
+
+}
+
+
+
+
+
+private fun firebaseAuthWithGoogle(
+    idToken: String,
+    navController: NavController,
+    context: Context
+) {
+    val credential = GoogleAuthProvider.getCredential(idToken, null)
+    auth.signInWithCredential(credential)
+        .addOnCompleteListener() { task ->
+            if (task.isSuccessful) {
+                // Sign in success, update UI with the signed-in user's information
+
+                val user = auth.currentUser
+                Toast.makeText(context,"Ha ido",Toast.LENGTH_SHORT).show()
+                navController.navigate(Destinations.MainAppView.route)
+                //updateUI(user)
+            } else {
+                // If sign in fails, display a message to the user.
+                Toast.makeText(context,"No Ha ido",Toast.LENGTH_SHORT).show()
+
+                Log.w(TAG, "signInWithCredential:failure", task.exception)
+               // updateUI(null)
+            }
+        }
+}
+/*
+private fun signInGoogle(googleSignInClient :GoogleSignInClient) {
+    val signInIntent = googleSignInClient.signInIntent
+    startActivityForResult(signInIntent, RC_SIGN_IN)
+}
+*/
 /*
 private fun setInformationUser() {
     db.collection("users").document(auth.currentUser?.uid.toString())

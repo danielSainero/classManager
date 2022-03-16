@@ -1,12 +1,17 @@
 package com.example.classmanegerandroid.Views.Login
 
-import android.content.IntentSender.OnFinished
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import me.saine.android.Classes.CurrentUser
+import me.saine.android.R
+import me.saine.android.dataClasses.ListItem
 import me.saine.android.dataClasses.appUser
 
 
@@ -35,11 +40,11 @@ class MainViewModelLogin: ViewModel() {
                         classes = document.get("classes") as MutableList<String>
                     )
                     CurrentUser.currentUser = currentUser
-                    CurrentUser.getMyCourses()
-                    CurrentUser.getMyClasses()
+                    CurrentUser.updateDates()
                     onFinished()
                 }
             }
         }
     }
+
 }

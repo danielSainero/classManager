@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.classmanegerandroid.Navigation.Destinations
@@ -31,13 +33,13 @@ fun MainRegister(
     var emailText = remember{ mutableStateOf("test@gmail.com") }
     var passwordText = remember{ mutableStateOf("11111111") }
     var repeatPasswordText = remember{ mutableStateOf("11111111") }
-    val checkedStatePrivacyPolicies = remember { mutableStateOf(true) }
+    val (checkedStatePrivacyPolicies,onValueChangecheckedStatePrivacyPolicies) = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Creación de cuenta")
+                    Text(text = "Registrarse")
                 },
             )
         },
@@ -51,7 +53,7 @@ fun MainRegister(
                         item {
                             Image(
                                 painter = rememberImagePainter(
-                                    data = "https://www.psicoactiva.com/wp-content/uploads/puzzleclopedia/Libros-codificados-300x262.jpg"
+                                    data = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Flogo.png?alt=media&token=a9d234bf-a791-44cd-ad29-fd18b54f488e"
                                 ),
                                 contentDescription = "Logo",
                                 modifier = Modifier
@@ -117,10 +119,21 @@ fun MainRegister(
                         }
 
                         item {
-                            Checkbox(
-                                checked = checkedStatePrivacyPolicies.value,
-                                onCheckedChange = { checkedStatePrivacyPolicies.value = it }
+                            Row (
+                                content = {
+                                    /*Checkbox(
+                                        checked = checkedStatePrivacyPolicies.value,
+                                        onCheckedChange = { checkedStatePrivacyPolicies.value = it },
+                                    )*/
+                                    labelledCheckbox(
+                                        labelText = "Politicas de Privacidad",
+                                        isCheckedValue = checkedStatePrivacyPolicies,
+                                        onValueChangeCheked = onValueChangecheckedStatePrivacyPolicies,
+                                        onClickText = {navController.navigate(Destinations.PrivacyPolicies.route)}
+                                    )
+                                }
                             )
+
                         }
                         item {
                             Button(
@@ -187,7 +200,6 @@ private fun reload(
     navController: NavController
 ) {
     navController.popBackStack()
-    //navController.navigate(Destinations.MainAppView.route)
 }
 
 private fun setInformationUser(
@@ -205,4 +217,37 @@ private fun setInformationUser(
                 "imgPath" to "uri",
             )
         )
+}
+
+@Composable
+private fun labelledCheckbox(
+    labelText: String,
+    isCheckedValue: Boolean,
+    onValueChangeCheked: (Boolean) -> Unit,
+    onClickText: () -> Unit
+) {
+    Row(
+        modifier = Modifier.padding(start = 30.dp,8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+
+        Checkbox(
+            checked = isCheckedValue,
+            onCheckedChange = { onValueChangeCheked(it) },
+            enabled = true,
+            colors = CheckboxDefaults.colors(Color.Blue)
+        )
+        Spacer(modifier = Modifier.padding(2.dp))
+        Text(
+            text = "${labelText}",
+            modifier = Modifier
+                .clickable{
+                    onClickText()
+                },
+            fontSize = 15.sp,
+            color = Color.Blue
+        )
+        Spacer(modifier = Modifier.padding(25.dp))
+    }
 }

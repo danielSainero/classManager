@@ -1,4 +1,4 @@
-package me.saine.android.Views.MainAppActivity
+package me.saine.android.Views.Course
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
