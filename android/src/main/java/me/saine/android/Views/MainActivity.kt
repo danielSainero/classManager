@@ -19,8 +19,11 @@ import me.saine.android.Views.Class.MainViewModelClass
 import me.saine.android.Views.Course.MainViewModelCourse
 import me.saine.android.Views.CreateClass.MainViewModelCreateClass
 import me.saine.android.Views.CreateCourse.MainViewModelCreateCourse
+import me.saine.android.Views.Login.ForgotPassword.MainViewModelForgotPassword
 import me.saine.android.Views.MainAppActivity.MainViewModelMainAppView
+import me.saine.android.Views.Practice.MainViewModelPractice
 import me.saine.android.Views.Register.MainViewModelRegister
+import me.saine.android.Views.Register.PrivacyPolicies.MainViewModelPrivacyPolicies
 import sainero.dani.intermodular.Views.ui.theme.classManagerTheme
 
 //SHA-1: 42:15:5B:23:7D:D6:30:B1:0C:FB:B8:6E:7F:76:2D:8A:92:95:18:40
@@ -33,6 +36,9 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModelCreateClass by viewModels<MainViewModelCreateClass>()
     private val mainViewModelCourse by viewModels<MainViewModelCourse>()
     private val mainViewModelClass by viewModels<MainViewModelClass>()
+    private val mainViewModelPrivacyPolicies by viewModels<MainViewModelPrivacyPolicies>()
+    private val mainViewModelForgotPassword by viewModels<MainViewModelForgotPassword>()
+    private val mainViewModelPractice by viewModels<MainViewModelPractice>()
 
 /*
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?,) {
@@ -74,7 +80,10 @@ class MainActivity : AppCompatActivity() {
                     mainViewModelCreateCourse = mainViewModelCreateCourse,
                     mainViewModelCreateClass = mainViewModelCreateClass,
                     mainViewModelCourse = mainViewModelCourse,
-                    mainViewModelClass = mainViewModelClass
+                    mainViewModelClass = mainViewModelClass,
+                    mainViewModelPrivacyPolicies = mainViewModelPrivacyPolicies,
+                    mainViewModelForgotPassword = mainViewModelForgotPassword,
+                    mainViewModelPractice = mainViewModelPractice
                 )
             }
         }

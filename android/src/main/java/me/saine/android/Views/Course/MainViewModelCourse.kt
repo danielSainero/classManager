@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import me.saine.android.Classes.CurrentUser
 import me.saine.android.Classes.CurrentUser.Companion.db
 import me.saine.android.dataClasses.Course
 import me.saine.android.dataClasses.Class

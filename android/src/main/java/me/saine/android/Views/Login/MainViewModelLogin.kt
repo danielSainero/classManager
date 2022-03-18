@@ -13,6 +13,7 @@ import me.saine.android.Classes.CurrentUser
 import me.saine.android.R
 import me.saine.android.dataClasses.ListItem
 import me.saine.android.dataClasses.appUser
+import java.util.regex.Pattern
 
 
 class MainViewModelLogin: ViewModel() {
@@ -46,5 +47,9 @@ class MainViewModelLogin: ViewModel() {
             }
         }
     }
+
+    //Validaciones
+    fun isValidPassword(text: String) = Pattern.compile("^[a-zA-Z0-9_]{8,}\$", Pattern.CASE_INSENSITIVE).matcher(text).find()
+
 
 }

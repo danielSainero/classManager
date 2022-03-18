@@ -18,10 +18,15 @@ import me.saine.android.Views.CreateClass.MainCreateClass
 import me.saine.android.Views.CreateClass.MainViewModelCreateClass
 import me.saine.android.Views.CreateCourse.MainCreateCourse
 import me.saine.android.Views.CreateCourse.MainViewModelCreateCourse
+import me.saine.android.Views.Login.ForgotPassword.MainForgotPassword
+import me.saine.android.Views.Login.ForgotPassword.MainViewModelForgotPassword
 import me.saine.android.Views.MainAppActivity.MainAppView
 import me.saine.android.Views.MainAppActivity.MainViewModelMainAppView
+import me.saine.android.Views.Practice.MainPractice
+import me.saine.android.Views.Practice.MainViewModelPractice
 import me.saine.android.Views.Register.MainViewModelRegister
 import me.saine.android.Views.Register.PrivacyPolicies.MainPrivacyPolicies
+import me.saine.android.Views.Register.PrivacyPolicies.MainViewModelPrivacyPolicies
 
 @Composable
 fun NavigationHost(
@@ -31,7 +36,10 @@ fun NavigationHost(
     mainViewModelCreateCourse: MainViewModelCreateCourse,
     mainViewModelCreateClass: MainViewModelCreateClass,
     mainViewModelCourse: MainViewModelCourse,
-    mainViewModelClass: MainViewModelClass
+    mainViewModelClass: MainViewModelClass,
+    mainViewModelPrivacyPolicies: MainViewModelPrivacyPolicies,
+    mainViewModelForgotPassword: MainViewModelForgotPassword,
+    mainViewModelPractice: MainViewModelPractice
 ) {
 
     var navController: NavHostController
@@ -73,6 +81,20 @@ fun NavigationHost(
                 mainViewModelCreateClass = mainViewModelCreateClass
             )
         }
+
+        composable(route = Destinations.ForgotPassword.route) {
+            MainForgotPassword(
+                navController = navController,
+                mainViewModelForgotPassword = mainViewModelForgotPassword
+            )
+        }
+        composable(route = Destinations.Practice.route) {
+            MainPractice(
+                navController = navController,
+                mainViewModelPractice = mainViewModelPractice
+            )
+        }
+
         composable(
             route = "${Destinations.Course.route}/{courseId}",
             arguments = listOf(navArgument("courseId"){type = NavType.StringType})
@@ -91,6 +113,7 @@ fun NavigationHost(
             content = {
                 val classId = it.arguments?.getString("classId")
                 requireNotNull(classId)
+                mainViewModelClass.getSelectedClass(classId)
 
                 MainClass(
                     navController = navController,
@@ -102,7 +125,8 @@ fun NavigationHost(
             route = Destinations.PrivacyPolicies.route,
             content = {
                 MainPrivacyPolicies(
-                    navController= navController
+                    navController= navController,
+                    mainViewModelPrivacyPolicies = mainViewModelPrivacyPolicies
                 )
             }
         )

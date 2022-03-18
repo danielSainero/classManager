@@ -1,5 +1,6 @@
 
 buildscript {
+    val compose_version by extra("1.0.0")
     repositories {
         gradlePluginPortal()
         jcenter()

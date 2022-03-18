@@ -11,4 +11,6 @@ sealed class Destinations(
     object Course: Destinations(route = "Views.Course.Course")
     object Class: Destinations(route = "Views.Class.Class")
     object PrivacyPolicies: Destinations(route = "Views.Register.PrivacyPolicies.PrivacyPolicies")
+    object ForgotPassword: Destinations(route = "Views.Login.ForgotPassword.ForgotPassword")
+    object Practice: Destinations(route = "Views.Practice.Practice")
 }

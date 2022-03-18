@@ -2,6 +2,7 @@ package com.example.classmanegerandroid.Views
 
 import android.content.ContentValues
 import android.content.Context
+import android.support.v4.os.IResultReceiver.Default
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -9,6 +10,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,31 +19,57 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.classmanegerandroid.Navigation.Destinations
-import me.saine.android.Views.Register.MainViewModelRegister
+import me.saine.android.Views.Register.*
 
 @Composable
 fun MainRegister(
     navController: NavController,
     mainViewModelRegister: MainViewModelRegister
 ) {
+    //Texts
+    var (emailText,onValueChangeEmailText) = remember{ mutableStateOf("test@gmail.com") }
+    var (emailError,emailErrorChange) = remember { mutableStateOf(false) }
+    val nameOfEmailError = remember { mutableStateOf("El email no es válido: ejemplo@ejemplo.eje") }
 
+    var (passwordText,onValueChangePasswordText) = remember{ mutableStateOf("11111111") }
+    var (passwordError,passwordErrorChange) = remember { mutableStateOf(false) }
+    val passwordTextErrorMesaje = remember { mutableStateOf("La contraseña no puede ser inferior a 8 caracteres ni contener caracteres especiales") }
+
+    var (repeatPasswordText,onValueChangeRepeatPasswordText) = remember{ mutableStateOf("11111111") }
+    var (repeatPasswordError,repeatPasswordErrorChange) = remember { mutableStateOf(false) }
+    val repeatPasswordTextErrorMesaje = remember { mutableStateOf("La contraseña no puede ser inferior a 8 caracteres ni contener caracteres especiales") }
+
+
+    //Help variables
     var context = LocalContext.current
-    var emailText = remember{ mutableStateOf("test@gmail.com") }
-    var passwordText = remember{ mutableStateOf("11111111") }
-    var repeatPasswordText = remember{ mutableStateOf("11111111") }
     val (checkedStatePrivacyPolicies,onValueChangecheckedStatePrivacyPolicies) = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Registrarse")
+                    Text(text = "Crear cuenta")
                 },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Go back",
+                                tint = Color.White,
+                            )
+                        }
+                    )
+                }
             )
         },
         content = {
@@ -63,68 +92,47 @@ fun MainRegister(
                             )
                         }
                         item {
-                            OutlinedTextField(
-                                value = emailText.value,
-                                onValueChange = {
-                                    emailText.value = it
-                                },
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Gray,
-                                    unfocusedBorderColor = Color.LightGray
-                                ),
-                                placeholder = { Text("Email") },
-                                singleLine = true,
-                                label = { Text(text = "Email") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(PaddingValues(start = 40.dp, end = 40.dp))
+                            bigTextFieldWithErrorMesaje(
+                                text = "Email",
+                                value = emailText,
+                                onValueChange = onValueChangeEmailText,
+                                validateError =  mainViewModelRegister::isValidEmail,
+                                errorMesaje = nameOfEmailError.value,
+                                changeError = emailErrorChange,
+                                error = emailError,
+                                mandatory = true,
+                                KeyboardType = KeyboardType.Text
                             )
                         }
 
                         item {
-                            OutlinedTextField(
-                                value = passwordText.value,
-                                onValueChange = {
-                                    passwordText.value = it
-                                },
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Gray,
-                                    unfocusedBorderColor = Color.LightGray
-                                ),
-                                placeholder = { Text("Password") },
-                                singleLine = true,
-                                label = { Text(text = "Password") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(PaddingValues(start = 40.dp, end = 40.dp))
-                            )
+                           bigPasswordInputWithErrorMesaje(
+                               value = passwordText,
+                               onValueChangeValue = onValueChangePasswordText,
+                               valueError = passwordError,
+                               onValueChangeError = passwordErrorChange,
+                               errorMesaje = passwordTextErrorMesaje.value,
+                               validateError = mainViewModelRegister::isValidPassword,
+                               mandatory = true,
+                               keyboardType = KeyboardType.Text
+                           )
                         }
                         item {
-                            OutlinedTextField(
-                                value = repeatPasswordText.value,
-                                onValueChange = {
-                                    repeatPasswordText.value = it
-                                },
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Gray,
-                                    unfocusedBorderColor = Color.LightGray
-                                ),
-                                placeholder = { Text("Password") },
-                                singleLine = true,
-                                label = { Text(text = "Password") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(PaddingValues(start = 40.dp, end = 40.dp))
+                            bigPasswordInputWithErrorMesaje(
+                                value = repeatPasswordText,
+                                onValueChangeValue = onValueChangeRepeatPasswordText,
+                                valueError = repeatPasswordError,
+                                onValueChangeError = repeatPasswordErrorChange,
+                                errorMesaje = repeatPasswordTextErrorMesaje.value,
+                                validateError = mainViewModelRegister::isValidPassword,
+                                mandatory = true,
+                                keyboardType = KeyboardType.Text
                             )
                         }
 
                         item {
                             Row (
                                 content = {
-                                    /*Checkbox(
-                                        checked = checkedStatePrivacyPolicies.value,
-                                        onCheckedChange = { checkedStatePrivacyPolicies.value = it },
-                                    )*/
                                     labelledCheckbox(
                                         labelText = "Politicas de Privacidad",
                                         isCheckedValue = checkedStatePrivacyPolicies,
@@ -141,14 +149,28 @@ fun MainRegister(
                                     Text(text = "Registrarse")
                                 },
                                 onClick = {
-                                    if (repeatPasswordText.value.equals(passwordText.value)) {
+                                    if (repeatPasswordText.equals(passwordText)) {
+                                        if (
+                                            mainViewModelRegister.checkAllValidations(
+                                                textEmail = emailText,
+                                                textPassword = passwordText,
+                                                checkedStatePrivacyPolicies = checkedStatePrivacyPolicies
+                                            )
+                                        ) {
                                             createUser(
-                                                email = emailText.value,
-                                                password = passwordText.value,
+                                                email = emailText,
+                                                password = passwordText,
                                                 mainViewModelRegister = mainViewModelRegister,
                                                 context = context,
                                                 navController = navController
                                             )
+                                            navController.navigate(Destinations.Login.route) {
+                                                popUpTo(0)
+                                            }
+                                        }
+                                        else {
+                                            Toast.makeText(context,"Debes rellenar todos los campos correctamente",Toast.LENGTH_SHORT).show()
+                                        }
                                     }
                                     else {
                                         Toast.makeText(context,"Las claves deben ser iguales",Toast.LENGTH_SHORT).show()
@@ -165,6 +187,7 @@ fun MainRegister(
         },
     )
 }
+
 
 private fun createUser(
     email: String,
@@ -219,35 +242,3 @@ private fun setInformationUser(
         )
 }
 
-@Composable
-private fun labelledCheckbox(
-    labelText: String,
-    isCheckedValue: Boolean,
-    onValueChangeCheked: (Boolean) -> Unit,
-    onClickText: () -> Unit
-) {
-    Row(
-        modifier = Modifier.padding(start = 30.dp,8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-
-        Checkbox(
-            checked = isCheckedValue,
-            onCheckedChange = { onValueChangeCheked(it) },
-            enabled = true,
-            colors = CheckboxDefaults.colors(Color.Blue)
-        )
-        Spacer(modifier = Modifier.padding(2.dp))
-        Text(
-            text = "${labelText}",
-            modifier = Modifier
-                .clickable{
-                    onClickText()
-                },
-            fontSize = 15.sp,
-            color = Color.Blue
-        )
-        Spacer(modifier = Modifier.padding(25.dp))
-    }
-}

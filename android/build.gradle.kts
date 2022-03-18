@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     kotlin("android")
+    id("kotlin-android")
 
 }
 
@@ -35,6 +36,13 @@ dependencies {
     //implementation("com.google.firebase:firebase-database-ktx")
 
     implementation("com.google.firebase:firebase-storage-ktx:20.0.0")
+    implementation("com.google.android.material:material:1.5.0")
+    implementation("androidx.compose.ui:ui:${rootProject.extra["compose_version"]}")
+    implementation("androidx.compose.material:material:${rootProject.extra["compose_version"]}")
+    implementation("androidx.compose.ui:ui-tooling-preview:${rootProject.extra["compose_version"]}")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
+    debugImplementation("androidx.compose.ui:ui-tooling:${rootProject.extra["compose_version"]}")
     /*implementation("com.google.firebase:firebase-crashlytics-ktx")*/
     /*implementation("com.google.firebase:firebase-analytics-ktx")*/
 
@@ -56,6 +64,9 @@ android {
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
+        vectorDrawables {
+            useSupportLibrary = true
+        }
 
 
     }
@@ -66,6 +77,22 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+        }
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+        useIR = true
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = rootProject.extra["compose_version"] as String
+        kotlinCompilerVersion = "1.5.10"
+    }
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }

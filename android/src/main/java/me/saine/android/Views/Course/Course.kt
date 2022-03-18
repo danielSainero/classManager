@@ -28,6 +28,8 @@ fun MainCourse(
 ) {
     val searchWidgetState by mainViewModelCourse.searchWidgetState
     val searchTextState by mainViewModelCourse.searchTextState
+    val aplicateFilter = remember { mutableStateOf(true) }
+    var filter: String = ""
 
     Scaffold(
         topBar = {
@@ -36,9 +38,9 @@ fun MainCourse(
                 searchTextState = searchTextState,
                 onTextChange = {
                     mainViewModelCourse.updateSearchTextState(newValue = it)
-                    /*aplicateFilter.value = false
+                    aplicateFilter.value = false
                     filter = it.lowercase()
-                    aplicateFilter.value = true*/
+                    aplicateFilter.value = true
                 },
                 onCloseClicked = {
                     mainViewModelCourse.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
@@ -75,11 +77,15 @@ fun MainCourse(
                         modifier = Modifier
                             .fillMaxWidth(),
                         content = {
-                            itemsIndexed(mainViewModelCourse.selectedClasses) { index: Int, item ->
-                                itemCourse(
-                                    course = item.name,
-                                    onClick = {}
-                                )
+                            if (aplicateFilter.value) {
+                                itemsIndexed(mainViewModelCourse.selectedClasses) { index: Int, item ->
+                                    if (item.name.lowercase().contains(filter)) {
+                                        itemCourse(
+                                            course = item.name,
+                                            onClick = {}
+                                        )
+                                    }
+                                }
                             }
                         }
                     )
@@ -103,14 +109,14 @@ private fun MainAppBar(
 ) {
     when (searchWidgetState) {
         SearchWidgetState.CLOSED -> {
-            DefaultAppBar(
+            defaultAppBar(
                 onSearchClicked = onSearchTriggered,
                 navController = navController,
                 mainViewModelCourse = mainViewModelCourse
             )
         }
         SearchWidgetState.OPENED -> {
-            SearchAppBar(
+            searchAppBar(
                 text = searchTextState,
                 onTextChange = onTextChange,
                 onCloseClicked = onCloseClicked,
@@ -121,169 +127,4 @@ private fun MainAppBar(
 }
 
 
-@Composable
-fun DefaultAppBar(
-    onSearchClicked: () -> Unit,
-    navController: NavController,
-    mainViewModelCourse: MainViewModelCourse
-) {
-    val expanded = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
-    TopAppBar(
-        title = {
-            Text(text = "${mainViewModelCourse.selectedCourse.name}")
-        },
-        actions = {
-            IconButton(
-                onClick = { onSearchClicked() }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Search Icon",
-                    tint = Color.White
-                )
-            }
-            Box (
-                modifier = Modifier
-                    .wrapContentSize(),
-                content = {
-                    IconButton(
-                        onClick = { expanded.value = true },
-                        content = {
-                            Icon(
-                                Icons.Filled.MoreVert,
-                                contentDescription = "Localized description",
-                                tint = Color.White
-                            )
-                        }
-                    )
-
-                    DropdownMenu(
-                        expanded = expanded.value,
-                        onDismissRequest = { expanded.value = false },
-                        content = {
-                            DropdownMenuItem(
-                                onClick = {
-                                    expanded.value = false
-                                },
-                                content = {
-                                    Text(text = "Ver info")
-                                }
-                            )
-                            DropdownMenuItem(
-                                onClick = {
-                                    expanded.value = false
-                                },
-                                content = {
-                                    Text(text = "Ver ayuda")
-                                }
-                            )
-                            DropdownMenuItem(
-                                onClick = {
-                                    expanded.value = false
-                                },
-                                content = {
-                                    Text(text = "Añadir usuario")
-                                }
-                            )
-                        }
-                    )
-                }
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = {
-                    navController.popBackStack()
-                },
-                content = {
-                    Icon(
-                        Icons.Filled.ArrowBack,
-                        contentDescription = "",
-                        tint = Color.White
-                    )
-                }
-            )
-        }
-    )
-}
-
-@Composable
-fun SearchAppBar(
-    text: String,
-    onTextChange: (String) -> Unit,
-    onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit,
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        elevation = AppBarDefaults.TopAppBarElevation
-    ) {
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth(),
-            value = text,
-            onValueChange = {
-                onTextChange(it)
-            },
-            placeholder = {
-                Text(
-                    modifier = Modifier
-                        .alpha(ContentAlpha.medium),
-                    text = "Search by name...",
-                    color = Color.White
-                )
-            },
-            textStyle = TextStyle(
-                fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                color = Color.White
-            ),
-            singleLine = true,
-            leadingIcon = {
-                IconButton(
-                    modifier = Modifier
-                        .alpha(ContentAlpha.medium),
-                    onClick = {}
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search Icon",
-                        tint = Color.White
-                    )
-                }
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        if (text.isNotEmpty()) {
-                            onTextChange("")
-                        } else {
-                            onCloseClicked()
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon",
-                        tint = Color.White
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearchClicked(text)
-                }
-            ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.primary,
-                cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
-            )
-        )
-    }
-}

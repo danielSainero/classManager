@@ -51,21 +51,13 @@ fun MainAppView(
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val searchWidgetState by mainViewModelMainAppView.searchWidgetState
     val searchTextState by mainViewModelMainAppView.searchTextState
-    val createItem = remember { mutableStateOf(false) }
+    val (createItem, onValueChangeCreateItem) = remember { mutableStateOf(false) }
     val aplicateFilter = remember { mutableStateOf(true) }
     var filter: String = ""
-
-
     val context = LocalContext.current
-    val allCourses = remember { mutableListOf<Course>() }
-    val allClasses = remember { mutableListOf<Class>() }
-    var (generateCourses,onValueChangeGenerateCouses) = remember { mutableStateOf(false) }
-    //getCourses(mainViewModelMainAppView,onValueChangeGenerateCouses)
-    /*val database = Firebase.database
-    val myRef = database.getReference("users")*/
 
-    //Firebase
-    //database = Firebase.database.reference
+
+
 
     Scaffold (
         scaffoldState = scaffoldState,
@@ -96,69 +88,19 @@ fun MainAppView(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Center,
                 content = {
-                    if (createItem.value) {
-                        val miniFabSize = 40.dp
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Text(text = "Crear curso")
-                            Spacer(modifier = Modifier.padding(5.dp))
-                            FloatingActionButton(
-                                backgroundColor = MaterialTheme.colors.primary,
-                                modifier = Modifier.size(miniFabSize),
-                                content = {
-                                    Icon(
-                                        painter = rememberAsyncImagePainter(
-                                            model = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Fschool_white.png?alt=media&token=e393aacc-eb7e-45f3-8e9a-6e1eaefb7411"
-                                        ),
-                                        contentDescription = "Search Icon",
-                                        tint = Color.White
-                                    )
-                                },
-                                onClick = {
-                                    createItem.value = false
-                                    navController.navigate(Destinations.CreateCourse.route)
-                                }
-                            )
-                        }
-                        Spacer(modifier = Modifier.padding(10.dp))
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Text(text = "Crear clase")
-                            Spacer(modifier = Modifier.padding(5.dp))
-                            FloatingActionButton(
-                                backgroundColor = MaterialTheme.colors.primary,
-                                modifier = Modifier.size(miniFabSize),
-                                content = {
-                                    Icon(
-                                        painter = rememberAsyncImagePainter(
-                                            model = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Fclass_white.png?alt=media&token=c3091fa8-b1b2-4969-90a8-1e2f09f3d856"
-                                        ),
-                                        contentDescription = "Class",
-                                        tint = Color.White
-                                    )
-                                },
-                                onClick = {
-                                    navController.navigate(Destinations.CreateClass.route)
-                                    createItem.value = false
-                                }
-                            )
-                        }
-                        Spacer(modifier = Modifier.padding(10.dp))
+                    if (createItem) {
+                        createNewItem(
+                            navController = navController,
+                            onValueChangeCreateItem = onValueChangeCreateItem
+                        )
                     }
-
                     FloatingActionButton(
                         backgroundColor = MaterialTheme.colors.primary,
                         content = {
-                            Text(text = if (createItem.value) "-" else "+")
+                            Text(text = if (createItem) "-" else "+")
                         },
                         onClick = {
-                            createItem.value = if (createItem.value) false else true
+                            onValueChangeCreateItem(if (createItem) false else true)
                         }
                     )
                 }
@@ -205,11 +147,11 @@ fun MainAppView(
 
             Column(
                 modifier = Modifier
-                    .alpha(if(createItem.value) 0.2f else 1f)
+                    .alpha(if(createItem) 0.2f else 1f)
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onTap = {
-                                if(createItem.value) createItem.value = false
+                                if(createItem) onValueChangeCreateItem(false)
                             }
                         )
                     }
@@ -272,7 +214,7 @@ fun MainAppView(
                                 if (item.name.lowercase().contains(filter)) {
                                     itemCourse(
                                         course = item.name,
-                                        onClick = {navController.navigate(Destinations.Class.route)}
+                                        onClick = {navController.navigate("${Destinations.Class.route}/${item.id}")}
                                     )
                                 }
                             }
@@ -297,13 +239,13 @@ private fun MainAppBar(
 ) {
     when (searchWidgetState) {
         SearchWidgetState.CLOSED -> {
-            DefaultAppBar(
+            defaultAppBar(
                 onSearchClicked = onSearchTriggered,
                 scaffoldState = scaffoldState
             )
         }
         SearchWidgetState.OPENED -> {
-            SearchAppBar(
+            searchAppBar(
                 text = searchTextState,
                 onTextChange = onTextChange,
                 onCloseClicked = onCloseClicked,
@@ -312,125 +254,79 @@ private fun MainAppBar(
         }
     }
 }
-
-
 @Composable
-fun DefaultAppBar(
-    onSearchClicked: () -> Unit,
-    scaffoldState: ScaffoldState
+fun createNewItem(
+    navController: NavController,
+    onValueChangeCreateItem: (Boolean) -> Unit
 ) {
-    val expanded = remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    val miniFabSize = 40.dp
 
-    TopAppBar(
-        title = {
-            Text(text = "Main App activity")
-        },
-        actions = {
-            IconButton(
-                onClick = { onSearchClicked() }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Search Icon",
-                    tint = Color.White
-                )
-            }
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = {
-                    scope.launch { scaffoldState.drawerState.open() }
-                }
-            ) {
-                Icon(
-                    Icons.Filled.Menu,
-                    contentDescription = "",
-                    tint = Color.White
-                )
-            }
-        }
-    )
-}
-
-@Composable
-fun SearchAppBar(
-    text: String,
-    onTextChange: (String) -> Unit,
-    onCloseClicked: () -> Unit,
-    onSearchClicked: (String) -> Unit,
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        elevation = AppBarDefaults.TopAppBarElevation
-    ) {
-        TextField(
-            modifier = Modifier
-                            .fillMaxWidth(),
-            value = text,
-            onValueChange = {
-                onTextChange(it)
-            },
-            placeholder = {
-                Text(
-                    modifier = Modifier
-                        .alpha(ContentAlpha.medium),
-                    text = "Search by name...",
-                    color = Color.White
-                )
-            },
-            textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                color = Color.White
-            ),
-            singleLine = true,
-            leadingIcon = {
-                IconButton(
-                    modifier = Modifier
-                        .alpha(ContentAlpha.medium),
-                    onClick = {}
-                ) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        content = {
+            Text(
+                text = "Crear curso",
+                modifier = Modifier
+                    .clickable { navController.navigate(Destinations.CreateCourse.route) }
+            )
+            Spacer(modifier = Modifier.padding(5.dp))
+            FloatingActionButton(
+                backgroundColor = MaterialTheme.colors.primary,
+                modifier = Modifier.size(miniFabSize),
+                content = {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        painter = rememberAsyncImagePainter(
+                            model = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Fschool_white.png?alt=media&token=e393aacc-eb7e-45f3-8e9a-6e1eaefb7411"
+                        ),
                         contentDescription = "Search Icon",
                         tint = Color.White
                     )
+                },
+                onClick = {
+                    onValueChangeCreateItem(false)
+                    navController.navigate(Destinations.CreateCourse.route)
                 }
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        if (text.isNotEmpty()) {
-                            onTextChange("")
-                        } else {
-                            onCloseClicked()
-                        }
-                    }
-                ) {
+            )
+        }
+    )
+
+    Spacer(modifier = Modifier.padding(10.dp))
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        content = {
+            Text(
+                text = "Crear clase",
+                modifier = Modifier
+                    .clickable { navController.navigate(Destinations.CreateClass.route) }
+            )
+            Spacer(modifier = Modifier.padding(5.dp))
+            FloatingActionButton(
+                backgroundColor = MaterialTheme.colors.primary,
+                modifier = Modifier.size(miniFabSize),
+                content = {
                     Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon",
+                        painter = rememberAsyncImagePainter(
+                            model = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Fclass_white.png?alt=media&token=c3091fa8-b1b2-4969-90a8-1e2f09f3d856"
+                        ),
+                        contentDescription = "Class",
                         tint = Color.White
                     )
+                },
+                onClick = {
+                    navController.navigate(Destinations.CreateClass.route)
+                    onValueChangeCreateItem(false)
                 }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearchClicked(text)
-                }
-            ),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.primary,
-                cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
             )
-        )
-    }
+        }
+    )
+    Spacer(modifier = Modifier.padding(10.dp))
 }
+
+
+
 
 @Composable
 fun MyButton() {
@@ -442,53 +338,3 @@ fun MyButton() {
     }
 }
 
-/*
-@Composable
-fun getCourses(
-    mainViewModelMainAppView: MainViewModelMainAppView,
-    generateCourses: (Boolean) -> Unit
-) {
-    mainViewModelMainAppView.db.collection("course").get().addOnSuccessListener {
-        mainViewModelMainAppView.allCourses.clear()
-        for (document in it) {
-            /* if (auth.currentUser?.uid.equals(document.id)) {}*/
-            mainViewModelMainAppView.allCourses.add(
-                Course(
-                    name = document.get("name") as String,
-                    classes = document.get("classes") as MutableList<String>,
-                    admins = document.get("admins") as MutableList<String>,
-                    description = document.get("description") as String
-                )
-            )
-        }
-        getMyCourses(mainViewModelMainAppView = mainViewModelMainAppView)
-        generateCourses(true)
-    }
-}
-
-fun getMyCourses(mainViewModelMainAppView: MainViewModelMainAppView) {
-    mainViewModelMainAppView.myCourses.clear()
-    mainViewModelMainAppView.allCourses.forEach{
-        it.admins.forEach{ admins ->
-            if (admins.equals(mainViewModelMainAppView.auth.currentUser?.uid.toString())) {
-                mainViewModelMainAppView.myCourses.add(it)
-            }
-        }
-    }
-}
-
-
-fun getClasses(
-    mainViewModelMainAppView: MainViewModelMainAppView,
-    allClasses: MutableList<Class>
-) {
-    mainViewModelMainAppView.db.collection("course").get().addOnSuccessListener {
-        for (document in it) {
-            allClasses.add(
-                Class(
-                    name = document.get("name") as String,
-                )
-            )
-        }
-    }
-}*/
