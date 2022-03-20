@@ -227,18 +227,7 @@ private fun signIn(
         }
 }
 
-@Override
-fun onStart() {
-    onStart()
 
-    val user = auth.currentUser
-    if(user != null){
-       // reload();
-    }
-    // Check if user is signed in (non-null) and update UI accordingly.
-    val currentUser = auth.currentUser
-    //updateUI(currentUser)
-}
 
 @Composable
 fun signInWithGoogle(

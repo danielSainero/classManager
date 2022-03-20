@@ -1,5 +1,7 @@
 package com.example.classmanegerandroid.Navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -28,8 +30,10 @@ import me.saine.android.Views.Register.MainViewModelRegister
 import me.saine.android.Views.Register.PrivacyPolicies.MainPrivacyPolicies
 import me.saine.android.Views.Register.PrivacyPolicies.MainViewModelPrivacyPolicies
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationHost(
+    startDestination: String,
     mainViewModelLogin: MainViewModelLogin,
     mainViewModelRegister: MainViewModelRegister,
     mainViewModelMainAppView: MainViewModelMainAppView,
@@ -47,7 +51,7 @@ fun NavigationHost(
 
     NavHost(
         navController = navController,
-        startDestination = Destinations.Login.route
+        startDestination = startDestination
     ) {
 
         composable(route = Destinations.Login.route) {
@@ -88,10 +92,16 @@ fun NavigationHost(
                 mainViewModelForgotPassword = mainViewModelForgotPassword
             )
         }
-        composable(route = Destinations.Practice.route) {
+        composable(
+            route = "${Destinations.Practice.route}/{idPractice}",
+            arguments = listOf(navArgument("idPractice"){type = NavType.StringType})
+        ) {
+            val idPractice = it.arguments?.getString("idPractice")
+            requireNotNull(idPractice)
             MainPractice(
                 navController = navController,
-                mainViewModelPractice = mainViewModelPractice
+                mainViewModelPractice = mainViewModelPractice,
+                idPractice = idPractice
             )
         }
 
@@ -101,10 +111,10 @@ fun NavigationHost(
         ) {
             val courseId = it.arguments?.getString("courseId")
             requireNotNull(courseId)
-            mainViewModelCourse.getSelectedCourse(courseId)
             MainCourse(
                 navController = navController,
-                mainViewModelCourse = mainViewModelCourse
+                mainViewModelCourse = mainViewModelCourse,
+                courseId = courseId
             )
         }
         composable(
@@ -113,11 +123,11 @@ fun NavigationHost(
             content = {
                 val classId = it.arguments?.getString("classId")
                 requireNotNull(classId)
-                mainViewModelClass.getSelectedClass(classId)
 
                 MainClass(
                     navController = navController,
-                    mainViewModelClass = mainViewModelClass
+                    mainViewModelClass = mainViewModelClass,
+                    classId = classId
                 )
             }
         )

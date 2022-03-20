@@ -21,7 +21,8 @@ import androidx.navigation.NavController
 fun defaultAppBar(
     onSearchClicked: () -> Unit,
     navController: NavController,
-    mainViewModelClass: MainViewModelClass
+    mainViewModelClass: MainViewModelClass,
+    onValueChangeDeleteItem: (Boolean) -> Unit
 ) {
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -90,6 +91,18 @@ fun defaultAppBar(
                                 },
                                 content = {
                                     Text(text = "Ver miembros")
+                                }
+                            )
+                            DropdownMenuItem(
+                                onClick = {
+                                    expanded.value = false
+                                    onValueChangeDeleteItem(true)
+                                },
+                                content = {
+                                    Text(
+                                        text = "Eliminar clase",
+                                        color = Color.Red
+                                    )
                                 }
                             )
                         }

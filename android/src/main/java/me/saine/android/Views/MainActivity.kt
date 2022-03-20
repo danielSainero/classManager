@@ -3,18 +3,22 @@ package me.saine.android.Views
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import me.saine.common.App
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import com.example.classmanegerandroid.Navigation.Destinations
 import com.example.classmanegerandroid.Navigation.NavigationHost
 import com.example.classmanegerandroid.Views.Login.MainViewModelLogin
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
+import me.saine.android.Classes.CurrentUser
 import me.saine.android.Views.Class.MainViewModelClass
 import me.saine.android.Views.Course.MainViewModelCourse
 import me.saine.android.Views.CreateClass.MainViewModelCreateClass
@@ -67,25 +71,41 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }*/
+var startDestination: String = Destinations.Login.route
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            classManagerTheme {
-               // mainViewModelMainAppView.getCourses()
-                NavigationHost(
-                    mainViewModelLogin = mainViewModelLogin,
-                    mainViewModelRegister = mainViewModelRegister,
-                    mainViewModelMainAppView = mainViewModelMainAppView,
-                    mainViewModelCreateCourse = mainViewModelCreateCourse,
-                    mainViewModelCreateClass = mainViewModelCreateClass,
-                    mainViewModelCourse = mainViewModelCourse,
-                    mainViewModelClass = mainViewModelClass,
-                    mainViewModelPrivacyPolicies = mainViewModelPrivacyPolicies,
-                    mainViewModelForgotPassword = mainViewModelForgotPassword,
-                    mainViewModelPractice = mainViewModelPractice
-                )
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Override
+    override fun onStart() {
+        super.onStart()
+        val user = CurrentUser.auth.currentUser
+        if(user != null){
+            startDestination = Destinations.MainAppView.route
+            mainViewModelLogin.saveCurrentUser {
+                setContent {
+                    classManagerTheme {
+                        // mainViewModelMainAppView.getCourses()
+                        NavigationHost(
+                            startDestination = startDestination,
+                            mainViewModelLogin = mainViewModelLogin,
+                            mainViewModelRegister = mainViewModelRegister,
+                            mainViewModelMainAppView = mainViewModelMainAppView,
+                            mainViewModelCreateCourse = mainViewModelCreateCourse,
+                            mainViewModelCreateClass = mainViewModelCreateClass,
+                            mainViewModelCourse = mainViewModelCourse,
+                            mainViewModelClass = mainViewModelClass,
+                            mainViewModelPrivacyPolicies = mainViewModelPrivacyPolicies,
+                            mainViewModelForgotPassword = mainViewModelForgotPassword,
+                            mainViewModelPractice = mainViewModelPractice
+                        )
+                    }
+                }
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
     }
 }

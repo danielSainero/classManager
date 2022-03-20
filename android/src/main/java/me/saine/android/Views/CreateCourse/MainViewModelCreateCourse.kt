@@ -8,27 +8,29 @@ import me.saine.android.dataClasses.ListItem
 class MainViewModelCreateCourse: ViewModel() {
 
     var allListItems = mutableListOf<ListItem>()
-    val allNameOfClasses =   mutableListOf<String>()
+    val allNameOfAvailablesClasses =   mutableListOf<String>()
 
     fun createListItems() {
         allListItems.clear()
         CurrentUser.myClasses.forEach {
-            allListItems.add(
-                ListItem(
-                    title = it.name,
-                    isSelected = false,
-                    id = it.id
+            if (it.idOfCourse.equals("Sin asignar")) {
+                allListItems.add(
+                    ListItem(
+                        title = it.name,
+                        isSelected = false,
+                        id = it.id
+                    )
                 )
-            )
+            }
         }
     }
     fun getOfListTitle():MutableList<String> {
-        allNameOfClasses.clear()
+        allNameOfAvailablesClasses.clear()
         allListItems.forEach { label ->
             if (label.isSelected) {
-                allNameOfClasses.add(label.title)
+                allNameOfAvailablesClasses.add(label.title)
             }
         }
-        return allNameOfClasses
+        return allNameOfAvailablesClasses
     }
 }

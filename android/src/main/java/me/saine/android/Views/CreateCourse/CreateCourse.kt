@@ -56,7 +56,7 @@ fun MainCreateCourse(
     if (addCourse) {
         addCourse(
             mainViewModelCreateCourse = mainViewModelCreateCourse,
-            onValueChangeaddClasses = onValueChangeAddCourse
+            onValueChangeAddClasses = onValueChangeAddCourse
         )
     }
 
@@ -162,8 +162,10 @@ fun MainCreateCourse(
                                     mainViewModelCreateCourse.allListItems.forEach {
                                         if (it.isSelected)  mySelectedClasses.add(it.id)
                                     }
+
                                     val document = db.collection("course").document()
                                     val idOfDocument = document.id
+
                                     document.set(
                                             hashMapOf(
                                                 "admins" to  mutableListOf<String>("${auth.currentUser?.uid}"),
@@ -181,6 +183,13 @@ fun MainCreateCourse(
                                                     navController.navigate(Destinations.MainAppView.route)
                                                 }
                                         }
+                                    mySelectedClasses.forEach{
+                                        db.collection("classes")
+                                            .document(it)
+                                            .update(
+                                                "idOfCourse" , idOfDocument
+                                            )
+                                    }
                                 },
                                 content = {
                                     Text(text = "Crear")
@@ -197,12 +206,12 @@ fun MainCreateCourse(
 @Composable
 fun addCourse(
     mainViewModelCreateCourse: MainViewModelCreateCourse,
-    onValueChangeaddClasses: (Boolean) -> Unit
+    onValueChangeAddClasses: (Boolean) -> Unit
 ) {
     Dialog(
 
         onDismissRequest = {
-            onValueChangeaddClasses(false)
+            onValueChangeAddClasses(false)
         },
         content = {
             LazyColumn(
@@ -248,7 +257,7 @@ fun addCourse(
                                 Text(text = "Aceptar")
                             },
                             onClick = {
-                                onValueChangeaddClasses(false)
+                                onValueChangeAddClasses(false)
                             }
                         )
                     }

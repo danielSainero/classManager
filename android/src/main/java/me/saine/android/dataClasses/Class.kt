@@ -5,5 +5,6 @@ data class Class(
     val name: String,
     val description: String,
     val idPractices: MutableList<String>,
-    val admins: MutableList<String>
+    val admins: MutableList<String>,
+    val idOfCourse: String
 )

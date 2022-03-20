@@ -32,6 +32,7 @@ import me.saine.android.Classes.CurrentUser.Companion.db
 import me.saine.android.Views.ViewsItems.createRowList
 import me.saine.android.Views.ViewsItems.dropDownMenuWithAction
 import me.saine.android.Views.ViewsItems.selectedDropDownMenu
+import me.saine.android.dataClasses.Course
 import me.saine.android.dataClasses.ListItem
 
 @Composable
@@ -42,7 +43,7 @@ fun MainCreateClass(
     //Texto
     val (textNameOfClass,onValueChangeTextNameOfClass) = remember { mutableStateOf("") }
     val (textDescription,onValueChangeTextDescription) = remember { mutableStateOf("") }
-    val (textSelectedCurse,onValueChangeTextSelectedCurse) = remember { mutableStateOf("") }
+    val (itemSelectedCurse,onValueChangeItemSelectedCurse) = remember { mutableStateOf<Course>(Course(arrayListOf(), arrayListOf(),"Sin asignar","","Sin asignar")) }
 
 
     var (addClasses,onValueChangeaddClasses) = remember { mutableStateOf(false) }
@@ -115,10 +116,10 @@ fun MainCreateClass(
                                 )
                             }
                             item {
-                                selectedDropDownMenu(
+                                selectedDropDownMenuCurseItem(
                                     textOfRow = "Curso",
-                                    suggestions = mainViewModelCreateClass.getNamesOfCurses(),
-                                    onValueChangeTextSelectedItem = onValueChangeTextSelectedCurse
+                                    suggestions = CurrentUser.myCourses,
+                                    onValueChangeTextSelectedItem = onValueChangeItemSelectedCurse
                                 )
                             }
                         }
@@ -165,16 +166,14 @@ fun MainCreateClass(
                                             "idPractices" to mutableListOf<String>(),
                                             "description" to textDescription,
                                             "name" to textNameOfClass,
+                                            "idOfCourse" to itemSelectedCurse.id
                                         )
                                     ).addOnSuccessListener {
-                                        if(textSelectedCurse != "") {
-
-/*
-
+                                        if(!itemSelectedCurse.name.equals("Sin asignar") ) {
+                                            itemSelectedCurse.classes.add(idOfDocument)
                                             db.collection("course")
-                                                .document(currentCourse)
-                                                .set(CurrentUser.currentUser.courses)*/
-
+                                                .document(itemSelectedCurse.id)
+                                                .set(itemSelectedCurse)
                                         }
 
                                         CurrentUser.currentUser.classes.add(idOfDocument)

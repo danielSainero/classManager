@@ -1,5 +1,7 @@
 package me.saine.android.Classes
 
+import android.widget.Toast
+import com.example.classmanegerandroid.Navigation.Destinations
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -54,7 +56,7 @@ class CurrentUser {
             }
         }
 
-        fun getMyClasses(onValueFinished: () -> Unit) {
+        fun getMyClasses() {
             myClasses.clear()
             currentUser.classes.forEach{ idOfClass ->
 
@@ -68,18 +70,25 @@ class CurrentUser {
                                 name = it.get("name") as String,
                                 description = it.get("description") as String,
                                 idPractices = it.get("idPractices") as MutableList<String>,
-                                admins = it.get("admins") as MutableList<String>
+                                admins = it.get("admins") as MutableList<String>,
+                                idOfCourse = it.get("idOfCourse") as String
                             )
                         )
-                        onValueFinished()
                     }
             }
         }
 
         fun updateDates() {
-            getMyClasses() {
-                getMyCourses()
-            }
+            getMyClasses()
+            getMyCourses()
+        }
+
+        fun uploadCurrentUser() {
+            db.collection("users")
+                .document(auth.currentUser?.uid.toString())
+                .set(currentUser).addOnSuccessListener {
+                    updateDates()
+                }
         }
     }
 }

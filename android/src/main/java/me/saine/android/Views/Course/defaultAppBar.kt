@@ -1,5 +1,6 @@
 package me.saine.android.Views.Course
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.*
@@ -21,7 +22,8 @@ import androidx.navigation.NavController
 fun defaultAppBar(
     onSearchClicked: () -> Unit,
     navController: NavController,
-    mainViewModelCourse: MainViewModelCourse
+    mainViewModelCourse: MainViewModelCourse,
+    onValueChangeDeleteItem: (Boolean) -> Unit
 ) {
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -82,6 +84,18 @@ fun defaultAppBar(
                                 },
                                 content = {
                                     Text(text = "Añadir usuario")
+                                }
+                            )
+                            DropdownMenuItem(
+                                onClick = {
+                                    expanded.value = false
+                                    onValueChangeDeleteItem(true)
+                                },
+                                content = {
+                                    Text(
+                                        text = "Eliminar curso",
+                                        color = Color.Red
+                                    )
                                 }
                             )
                         }

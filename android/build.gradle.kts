@@ -33,7 +33,6 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-storage:7.2.0")
     implementation("com.google.android.gms:play-services-auth:20.1.0")
 
-    //implementation("com.google.firebase:firebase-database-ktx")
 
     implementation("com.google.firebase:firebase-storage-ktx:20.0.0")
     implementation("com.google.android.material:material:1.5.0")
@@ -43,14 +42,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
     debugImplementation("androidx.compose.ui:ui-tooling:${rootProject.extra["compose_version"]}")
-    /*implementation("com.google.firebase:firebase-crashlytics-ktx")*/
-    /*implementation("com.google.firebase:firebase-analytics-ktx")*/
 
     //Others
+    //implementation("io.getstream:stream-chat-android-ui-components:4.8.1")
 
 
     //Tests
-    //implementation 'com.google.firebase:firebase-analytics-ktx'
 
 
 }
