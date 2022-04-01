@@ -10,6 +10,16 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
+                android:name=".Views.Settings.MyAccount.MyAccount"
+                android:exported="true"
+                android:label="@string/title_activity_my_account"
+                android:theme="@style/NoActionBar"/>
+        <activity
+                android:name=".Views.Settings.Settings"
+                android:exported="true"
+                android:label="@string/title_activity_settings"
+                android:theme="@style/NoActionBar"/>
+        <activity
                 android:name=".Views.Practice.Practice"
                 android:exported="true"
                 android:label="@string/title_activity_practice"
@@ -35,8 +45,15 @@
             -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="class_manager.com" android:scheme="https" />
+                <data android:host="class_manager.com" android:scheme="http" />
             </intent-filter>
         </activity>
     </application>

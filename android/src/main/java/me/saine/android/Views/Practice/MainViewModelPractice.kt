@@ -1,21 +1,32 @@
 package me.saine.android.Views.Practice
 
 import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import me.saine.android.Classes.CurrentUser
-import me.saine.android.Classes.CurrentUser.Companion.db
-import me.saine.android.dataClasses.Chat
-import me.saine.android.dataClasses.Class
-import me.saine.android.dataClasses.Message
-import me.saine.android.dataClasses.Practice
+import me.saine.android.data.local.Message
+import me.saine.android.data.network.AccesToDataBase.Companion.db
+import me.saine.android.data.remote.Chat
+import me.saine.android.data.remote.Practice
+import me.saine.android.data.network.AccesToDataBase.Companion.deletePracticeByPractice
+import me.saine.android.data.remote.appUser
 
 class MainViewModelPractice: ViewModel() {
 
     var selectedPractice: Practice = Practice("","", "","","","")
     var chat: Chat = Chat("", arrayListOf())
 
+    fun deletePractice (
+        context: Context,
+        navController: NavController
+    ) {
+        deletePracticeByPractice(
+            context =context,
+            navController = navController,
+            selectedPractice = selectedPractice
+        )
+    }
+
+    /*
     fun deletePractice(
         context: Context,
         navController: NavController
@@ -36,10 +47,8 @@ class MainViewModelPractice: ViewModel() {
                 navController.popBackStack()
                 Toast.makeText(context,"La clase se ha eliminado correctamente", Toast.LENGTH_SHORT).show()
             }
-
-
-
     }
+
     fun deleteIdOfPracticeInTableClass(
         newValueOfPractices: MutableList<String>
     ) {
@@ -55,7 +64,7 @@ class MainViewModelPractice: ViewModel() {
             .addOnSuccessListener {
             }
     }
-
+*/
     fun getPractice(
         idPractice: String
     ) {
@@ -76,19 +85,48 @@ class MainViewModelPractice: ViewModel() {
             }
     }
 
+    fun updateChat() {
+
+        db.collection("practicesChats")
+            .document(chat.id)
+            .update("conversation",chat.conversation)
+    }
+
     fun getChat(
         idChat: String
     ) {
         db.collection("practicesChats")
             .document(idChat)
             .get()
-            .addOnSuccessListener {
-                /*chat =
+            .addOnSuccessListener { document ->
+                val messagesHasMap = document.get("conversation") as  MutableList<HashMap<String,Any>>
+                val messages: MutableList<Message> = mutableListOf()
+                messagesHasMap.forEach { message ->
+                    val myUserHasMap = message.get("sentBy") as HashMap<String,Any>
+
+                    val myUser = appUser(
+                        description = myUserHasMap.get("description") as String,
+                        name = myUserHasMap.get("name") as String,
+                        id = myUserHasMap.get("id") as String,
+                        email = myUserHasMap.get("email") as String,
+                        imgPath = myUserHasMap.get("imgPath") as String,
+                        courses = myUserHasMap.get("courses") as MutableList<String>,
+                        classes = myUserHasMap.get("classes") as MutableList<String>
+                    )
+
+                    messages.add(
+                        Message(
+                            sentOn = message.get("sentOn") as String,
+                            message = message.get("message") as String,
+                            sentBy = myUser
+                        )
+                    )
+                }
+                chat =
                     Chat(
-                        id = it.id,
-                        idOfPractice = it.get("idOfPractice") as String,
-                        conversation = it.get("conversation") as MutableList<Message>
-                    )*/
+                        id = document.id,
+                        conversation = messages
+                    )
             }
     }
 }

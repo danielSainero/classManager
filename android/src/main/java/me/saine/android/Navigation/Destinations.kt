@@ -13,4 +13,7 @@ sealed class Destinations(
     object PrivacyPolicies: Destinations(route = "Views.Register.PrivacyPolicies.PrivacyPolicies")
     object ForgotPassword: Destinations(route = "Views.Login.ForgotPassword.ForgotPassword")
     object Practice: Destinations(route = "Views.Practice.Practice")
+    object Settings: Destinations(route = "Views.Settings.Settings")
+    object MyAccount: Destinations(route = "Views.Settings.MyAccount.MyAccount")
+    object MyAccountOptions: Destinations(route = "Views.Settings.MyAccountOptions.MyAccountOptions")
 }

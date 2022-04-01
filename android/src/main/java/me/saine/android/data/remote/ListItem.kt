@@ -1,4 +1,4 @@
-package me.saine.android.dataClasses
+package me.saine.android.data.remote
 
 data class ListItem(
     val title: String,

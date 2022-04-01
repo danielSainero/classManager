@@ -1,24 +1,17 @@
 package me.saine.android.Views
 
-import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.os.Build
-import me.saine.common.App
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
+import androidx.compose.runtime.Composable
 import com.example.classmanegerandroid.Navigation.Destinations
 import com.example.classmanegerandroid.Navigation.NavigationHost
 import com.example.classmanegerandroid.Views.Login.MainViewModelLogin
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.common.api.ApiException
-import me.saine.android.Classes.CurrentUser
 import me.saine.android.Views.Class.MainViewModelClass
 import me.saine.android.Views.Course.MainViewModelCourse
 import me.saine.android.Views.CreateClass.MainViewModelCreateClass
@@ -29,6 +22,9 @@ import me.saine.android.Views.Practice.MainViewModelPractice
 import me.saine.android.Views.Register.MainViewModelRegister
 import me.saine.android.Views.Register.PrivacyPolicies.MainViewModelPrivacyPolicies
 import sainero.dani.intermodular.Views.ui.theme.classManagerTheme
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.tasks.Task
+import me.saine.android.data.network.AccesToDataBase.Companion.auth
 
 //SHA-1: 42:15:5B:23:7D:D6:30:B1:0C:FB:B8:6E:7F:76:2D:8A:92:95:18:40
 
@@ -44,68 +40,71 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModelForgotPassword by viewModels<MainViewModelForgotPassword>()
     private val mainViewModelPractice by viewModels<MainViewModelPractice>()
 
-/*
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?,) {
-        super.onActivityResult(requestCode, resultCode, data,)
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-
         if (requestCode == 1) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                val account = task.getResult(ApiException::class.java)!!
-                Log.d(ContentValues.TAG, "firebaseAuthWithGoogle:" + account.id)
-                firebaseAuthWithGoogle(
-                    idToken = account.idToken!!,
-                    navController = navController,
-                    context = context
-                )
-                Toast.makeText(context,"Ha ido2", Toast.LENGTH_SHORT).show()
+            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
+            mainViewModelLogin.finishLogin(task)
 
-            } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
-                Toast.makeText(context,"No Ha ido2", Toast.LENGTH_SHORT).show()
-
-                Log.w(ContentValues.TAG, "Google sign in failed", e)
-            }
         }
-    }*/
-var startDestination: String = Destinations.Login.route
+    }
+
+
+
+
+    var startDestination: String = Destinations.Login.route
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Override
     override fun onStart() {
         super.onStart()
-        val user = CurrentUser.auth.currentUser
-        if(user != null){
+
+        //auth.signOut()
+        val user = auth.currentUser
+        if (user != null) {
             startDestination = Destinations.MainAppView.route
             mainViewModelLogin.saveCurrentUser {
                 setContent {
                     classManagerTheme {
-                        // mainViewModelMainAppView.getCourses()
-                        NavigationHost(
-                            startDestination = startDestination,
-                            mainViewModelLogin = mainViewModelLogin,
-                            mainViewModelRegister = mainViewModelRegister,
-                            mainViewModelMainAppView = mainViewModelMainAppView,
-                            mainViewModelCreateCourse = mainViewModelCreateCourse,
-                            mainViewModelCreateClass = mainViewModelCreateClass,
-                            mainViewModelCourse = mainViewModelCourse,
-                            mainViewModelClass = mainViewModelClass,
-                            mainViewModelPrivacyPolicies = mainViewModelPrivacyPolicies,
-                            mainViewModelForgotPassword = mainViewModelForgotPassword,
-                            mainViewModelPractice = mainViewModelPractice
-                        )
+                        chargeScreen()
                     }
                 }
             }
+        } else {
+            setContent {
+                classManagerTheme {
+                    chargeScreen()
+                }
+            }
         }
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+    fun chargeScreen() {
+        NavigationHost(
+            startDestination = startDestination,
+            mainViewModelLogin = mainViewModelLogin,
+            mainViewModelRegister = mainViewModelRegister,
+            mainViewModelMainAppView = mainViewModelMainAppView,
+            mainViewModelCreateCourse = mainViewModelCreateCourse,
+            mainViewModelCreateClass = mainViewModelCreateClass,
+            mainViewModelCourse = mainViewModelCourse,
+            mainViewModelClass = mainViewModelClass,
+            mainViewModelPrivacyPolicies = mainViewModelPrivacyPolicies,
+            mainViewModelForgotPassword = mainViewModelForgotPassword,
+            mainViewModelPractice = mainViewModelPractice
+        )
     }
 }

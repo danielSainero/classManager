@@ -23,7 +23,9 @@ fun defaultAppBar(
     onSearchClicked: () -> Unit,
     navController: NavController,
     mainViewModelCourse: MainViewModelCourse,
-    onValueChangeDeleteItem: (Boolean) -> Unit
+    onValueChangeDeleteItem: (Boolean) -> Unit,
+    onValueChangeAddNewUser: (Boolean) -> Unit,
+    onValueChangeGetMoreInformation: (Boolean) -> Unit
 ) {
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -65,6 +67,7 @@ fun defaultAppBar(
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
+                                    onValueChangeGetMoreInformation(true)
                                 },
                                 content = {
                                     Text(text = "Ver info")
@@ -81,6 +84,16 @@ fun defaultAppBar(
                             DropdownMenuItem(
                                 onClick = {
                                     expanded.value = false
+                                },
+                                content = {
+                                    Text(text = "Ver miembros")
+                                }
+                            )
+                            DropdownMenuItem(
+                                onClick = {
+                                    expanded.value = false
+                                    onValueChangeAddNewUser(true)
+
                                 },
                                 content = {
                                     Text(text = "Añadir usuario")

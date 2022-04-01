@@ -1,46 +1,36 @@
-package me.saine.android.Views.CreateClass
+package me.saine.android.Views.Course
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import me.saine.android.data.remote.Course
-
 
 @Composable
-fun selectedDropDownMenuCurseItem(
-    textOfRow: String,
-    suggestions: List<Course>,
-    onValueChangeTextSelectedItem: (Course) -> Unit
+fun bigSelectedDropDownMenu(
+    suggestions: List<String>,
+    onValueChangeTextSelectedItem: (String) -> Unit
 ) {
-    Spacer(modifier = Modifier.padding(4.dp))
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("Sin asignar")}
+    var selectedText by remember { mutableStateOf("Sin asignar") }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
-    var editItem = remember{ mutableStateOf(false) }
-
     val icon = if (expanded)
         Icons.Filled.KeyboardArrowUp
     else
         Icons.Filled.KeyboardArrowDown
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(text = "${textOfRow}:", Modifier.width(100.dp))
-        Column() {
-
+    Column(
+        content = {
             OutlinedTextField(
                 value = selectedText,
                 onValueChange = { selectedText = it },
@@ -58,24 +48,26 @@ fun selectedDropDownMenuCurseItem(
                     )
                 }
             )
+
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
-            ) {
-                suggestions.forEach { label ->
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedText = label.name
-                            onValueChangeTextSelectedItem(label)
-                            expanded = false
+                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() }),
+                content = {
+                    suggestions.forEach { label ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedText = label
+                                onValueChangeTextSelectedItem(label)
+                                expanded = false
+                            }
+                        ) {
+                            Text(text = label)
                         }
-                    ) {
-                        Text(text = label.name)
                     }
                 }
-            }
+            )
         }
-    }
+    )
 }

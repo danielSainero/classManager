@@ -1,9 +1,6 @@
 package me.saine.android.Views.Login.ForgotPassword
 
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -20,8 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import me.saine.android.Classes.CurrentUser.Companion.auth
-import me.saine.android.Views.ViewsItems.createRowList
+import me.saine.android.data.network.AccesToDataBase.Companion.auth
 
 
 @Composable

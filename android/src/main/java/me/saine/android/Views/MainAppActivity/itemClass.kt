@@ -1,5 +1,6 @@
 package me.saine.android.Views.MainAppActivity
 
+import android.support.v4.os.IResultReceiver.Default
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,18 +11,18 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.List
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
 
 @Composable
-fun itemCourse(
+fun itemClass(
     title: String,
     subtitle: String,
     onClick: () -> Unit
@@ -71,22 +72,23 @@ fun itemCourse(
                                 fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.padding(4.dp))
-                            Row(
-                              content = {
-                                  Icon(
-                                      painter = rememberAsyncImagePainter(
-                                          model = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Fclass_white.png?alt=media&token=c3091fa8-b1b2-4969-90a8-1e2f09f3d856"
-                                      ),
-                                      contentDescription = "clases",
-                                      modifier = Modifier.size(21.dp)
-                                  )
-                                  Text(
-                                      text = subtitle,
-                                      style = MaterialTheme.typography.caption,
-                                      modifier = Modifier
-                                          .padding(4.dp),
-                                  )
-                              }
+
+                            Row (//Email
+                                content = {
+                                    Icon(
+                                        painter = rememberAsyncImagePainter(
+                                            model = "https://firebasestorage.googleapis.com/v0/b/class-manager-58dbf.appspot.com/o/appImages%2Ftask_black.png?alt=media&token=a3898a4b-d7a1-41e8-9c78-268f7d0ebf03"
+                                        ),
+                                        contentDescription = "Comments",
+                                        modifier = Modifier.size(21.dp)
+                                    )
+                                    Text(
+                                        text = subtitle,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier
+                                            .padding(4.dp),
+                                    )
+                                }
                             )
                         }
                     )

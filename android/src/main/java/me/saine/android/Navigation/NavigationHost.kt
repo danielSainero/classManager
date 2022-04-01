@@ -11,7 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.classmanegerandroid.Views.Login.MainLogin
 import com.example.classmanegerandroid.Views.Login.MainViewModelLogin
-import com.example.classmanegerandroid.Views.MainRegister
+import me.saine.android.Views.Register.MainRegister
 import me.saine.android.Views.Class.MainClass
 import me.saine.android.Views.Class.MainViewModelClass
 import me.saine.android.Views.Course.MainCourse
@@ -26,9 +26,15 @@ import me.saine.android.Views.MainAppActivity.MainAppView
 import me.saine.android.Views.MainAppActivity.MainViewModelMainAppView
 import me.saine.android.Views.Practice.MainPractice
 import me.saine.android.Views.Practice.MainViewModelPractice
+import me.saine.android.Views.Register.MainRegister
 import me.saine.android.Views.Register.MainViewModelRegister
 import me.saine.android.Views.Register.PrivacyPolicies.MainPrivacyPolicies
 import me.saine.android.Views.Register.PrivacyPolicies.MainViewModelPrivacyPolicies
+import me.saine.android.Views.Settings.MainSettings
+import me.saine.android.Views.Settings.MyAccount.MainMyAccount
+import me.saine.android.Views.Settings.MyAccountOptions.MainMyAccountOptions
+
+lateinit var navController: NavHostController
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -46,7 +52,7 @@ fun NavigationHost(
     mainViewModelPractice: MainViewModelPractice
 ) {
 
-    var navController: NavHostController
+
     navController = rememberNavController()
 
     NavHost(
@@ -72,6 +78,22 @@ fun NavigationHost(
                 mainViewModelMainAppView = mainViewModelMainAppView
             )
         }
+        composable(route = Destinations.Settings.route) {
+            MainSettings(
+                navController = navController,
+            )
+        }
+        composable(route = Destinations.MyAccount.route) {
+            MainMyAccount(
+                navController = navController,
+            )
+        }
+        composable(route = Destinations.MyAccountOptions.route) {
+            MainMyAccountOptions(
+                navController = navController,
+            )
+        }
+
         composable(route = Destinations.CreateCourse.route) {
             mainViewModelCreateCourse.createListItems()
             MainCreateCourse(

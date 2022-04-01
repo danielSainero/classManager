@@ -22,7 +22,8 @@ fun defaultAppBar(
     onSearchClicked: () -> Unit,
     navController: NavController,
     mainViewModelClass: MainViewModelClass,
-    onValueChangeDeleteItem: (Boolean) -> Unit
+    onValueChangeDeleteItem: (Boolean) -> Unit,
+    onValueChangeAddNewUser: (Boolean) -> Unit
 ) {
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -79,6 +80,7 @@ fun defaultAppBar(
                             )
                             DropdownMenuItem(
                                 onClick = {
+                                    onValueChangeAddNewUser(true)
                                     expanded.value = false
                                 },
                                 content = {

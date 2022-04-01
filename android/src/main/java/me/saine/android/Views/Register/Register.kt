@@ -1,12 +1,7 @@
-package com.example.classmanegerandroid.Views
+package me.saine.android.Views.Register
 
-import android.content.ContentValues
-import android.content.Context
-import android.support.v4.os.IResultReceiver.Default
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
@@ -21,11 +16,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.classmanegerandroid.Navigation.Destinations
-import me.saine.android.Views.Register.*
 
 @Composable
 fun MainRegister(
@@ -157,10 +150,9 @@ fun MainRegister(
                                                 checkedStatePrivacyPolicies = checkedStatePrivacyPolicies
                                             )
                                         ) {
-                                            createUser(
+                                            mainViewModelRegister.createUserWithEmailAndPassword(
                                                 email = emailText,
                                                 password = passwordText,
-                                                mainViewModelRegister = mainViewModelRegister,
                                                 context = context,
                                                 navController = navController
                                             )
@@ -189,56 +181,7 @@ fun MainRegister(
 }
 
 
-private fun createUser(
-    email: String,
-    password: String,
-    mainViewModelRegister: MainViewModelRegister,
-    context: Context,
-    navController: NavController
-) {
-    mainViewModelRegister.auth.
-    createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener() { task ->
-            if (task.isSuccessful) {
-                Log.d(ContentValues.TAG, "createUserWithEmail:success")
-                val user = mainViewModelRegister.auth.currentUser
 
-                Toast.makeText(context,"Has sido registrado correctamente",Toast.LENGTH_LONG).show()
-                setInformationUser(
-                    mainViewModelRegister = mainViewModelRegister,
-                    email = email,
-                    password = password
-                )
-                reload(
-                    navController = navController
-                )
-            } else {
-                Log.w(ContentValues.TAG, "createUserWithEmail:failure", task.exception)
-                Toast.makeText(context,"El usuario no ha podido ser creado",Toast.LENGTH_LONG).show()
-            }
-        }
-}
 
-private fun reload(
-    navController: NavController
-) {
-    navController.popBackStack()
-}
 
-private fun setInformationUser(
-    mainViewModelRegister: MainViewModelRegister,
-    email: String,
-    password: String
-) {
-    mainViewModelRegister.db.collection("users").document(mainViewModelRegister.auth.currentUser?.uid.toString())
-        .set(
-            hashMapOf(
-                "courses" to  mutableListOf<String>("LKfzK0WThqPnjTt4H63RQ8DXikI3"),
-                "classes" to mutableListOf<String>("7doxqoJ7a110l8ljXZpV"),
-                "name" to "userName",
-                "email" to email,
-                "imgPath" to "uri",
-            )
-        )
-}
 

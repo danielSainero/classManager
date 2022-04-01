@@ -1,20 +1,14 @@
-package me.saine.android.Views.Practice
+package me.saine.android.Views.Practice;
 
-import android.app.DatePickerDialog
-import android.content.Context
+
+import android.net.Uri
 import android.os.Build
-import android.os.Bundle
-import android.widget.DatePicker
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,27 +19,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.classmanegerandroid.Navigation.Destinations
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.delay
 import me.saine.android.Classes.CurrentUser
 import me.saine.android.Views.ViewsItems.confirmAlertDialog
-import me.saine.android.dataClasses.Message
+import me.saine.android.data.local.Message
+import me.saine.android.data.network.AccesToDataBase.Companion.auth
 import java.time.LocalDate.now
-import java.time.LocalDateTime
-import java.util.*
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -56,6 +48,8 @@ fun MainPractice(
     idPractice: String
 ) {
     val expanded = remember { mutableStateOf(false) }
+    var commentsIsSelected by remember { mutableStateOf(true) }
+
     val context = LocalContext.current
     var (deleteItem,onValueChangeDeleteItem) = remember { mutableStateOf(false)}
 
@@ -91,121 +85,216 @@ fun MainPractice(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = mainViewModelPractice.selectedPractice.name)
-                },
-                actions = {
-                    Box (
-                        modifier = Modifier
-                            .wrapContentSize(),
-                        content = {
-                            IconButton(
-                                onClick = { expanded.value = true },
-                                content = {
-                                    Icon(
-                                        Icons.Filled.MoreVert,
-                                        contentDescription = "Localized description",
-                                        tint = Color.White
-                                    )
-                                }
-                            )
+    var isRefreshing by remember { mutableStateOf(false) }
 
-                            DropdownMenu(
-                                expanded = expanded.value,
-                                onDismissRequest = { expanded.value = false },
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
+            delay(800L)
+            isRefreshing = false
+        }
+    }
+
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+        onRefresh = { isRefreshing = true },
+        content =  {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(text = mainViewModelPractice.selectedPractice.name)
+                        },
+                        actions = {
+                            Box (
+                                modifier = Modifier
+                                    .wrapContentSize(),
                                 content = {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            expanded.value = false
-                                        },
+                                    IconButton(
+                                        onClick = { expanded.value = true },
                                         content = {
-                                            Text(text = "Ver miembros")
+                                            Icon(
+                                                Icons.Filled.MoreVert,
+                                                contentDescription = "Localized description",
+                                                tint = Color.White
+                                            )
                                         }
                                     )
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            expanded.value = false
-                                            onValueChangeDeleteItem(true)
-                                        },
+
+                                    DropdownMenu(
+                                        expanded = expanded.value,
+                                        onDismissRequest = { expanded.value = false },
                                         content = {
-                                            Text(
-                                                text = "Eliminar actividad",
-                                                color = Color.Red
+                                            DropdownMenuItem(
+                                                onClick = {
+                                                    expanded.value = false
+                                                },
+                                                content = {
+                                                    Text(text = "Ver miembros")
+                                                }
+                                            )
+                                            DropdownMenuItem(
+                                                onClick = {
+                                                    expanded.value = false
+                                                    onValueChangeDeleteItem(true)
+                                                },
+                                                content = {
+                                                    Text(
+                                                        text = "Eliminar actividad",
+                                                        color = Color.Red
+                                                    )
+                                                }
                                             )
                                         }
                                     )
                                 }
                             )
-                        }
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
                         },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Ir atras",
-                                tint = Color.White
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    navController.popBackStack()
+                                },
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.Filled.ArrowBack,
+                                        contentDescription = "Ir atras",
+                                        tint = Color.White
+                                    )
+                                }
                             )
                         }
                     )
-                }
-            )
-        },
-        backgroundColor = Color.White,
-        bottomBar = {
+                },
+                backgroundColor = Color.White,
+                bottomBar = {
+                    bottomAppBar(
+                        value = textMessage,
+                        onValueChageValue = onValueChangeTextMessage,
+                        mainViewModelPractice = mainViewModelPractice
+                    )
 
-            bottomAppBar(
-                value = textMessage,
-                onValueChageValue = onValueChangeTextMessage,
-                mainViewModelPractice = mainViewModelPractice
-            )
+                },
+                content = {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        content ={
+                            if (commentsIsSelected) {
+                                item {
+                                    showDatePicker(
+                                        context = context,
+                                        textDate = textDate,
+                                        onValueChangeTextDate = onValueChangeTextDate,
+                                        label = "Fecha de entrega",
+                                        placeholder = "Fecha de entrega"
+                                    )
+                                }
+                                item {
+                                    bigTextField(
+                                        text = "Descripción",
+                                        value = textDescription,
+                                        onValueChange = onValueChangeTextDescription,
+                                        KeyboardType = KeyboardType.Text
+                                    )
+                                }
 
-        },
-        content = {
-            LazyColumn(
-                content ={
-                    item {
-                        showDatePicker(
-                            context = context,
-                            textDate = textDate,
-                            onValueChangeTextDate = onValueChangeTextDate,
-                            label = "Fecha de entrega",
-                            placeholder = "Fecha de entrega"
-                        )
-                    }
-                    item {
-                        bigTextField(
-                            text = "Descripción",
-                            value = textDescription,
-                            onValueChange = onValueChangeTextDescription,
-                            KeyboardType = KeyboardType.Text
-                        )
-                    }
+                                item {
+                                    bigTextField(
+                                        text = "Annotation",
+                                        value = textAnnotation,
+                                        onValueChange = onValueChangeTextAnnotation,
+                                        KeyboardType = KeyboardType.Text
+                                    )
+                                }
+                            }
 
-                    item {
-                        bigTextField(
-                            text = "Annotation",
-                            value = textAnnotation,
-                            onValueChange = onValueChangeTextAnnotation,
-                            KeyboardType = KeyboardType.Text
-                        )
-                    }
 
-                    item {
-                        Text(text = "Comments")
-                    }
+                            item {
+                                Spacer(modifier = Modifier.padding(10.dp))
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .border(BorderStroke(1.dp, Color.LightGray)),
+                                    content = {
+                                        Spacer(modifier = Modifier.padding(1.dp))
+                                    }
+                                )
+                                Row (
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Start,
+                                    modifier = Modifier
+                                        .clickable {
+                                            commentsIsSelected = if (commentsIsSelected) false else true
+                                        },
+                                    content = {
+                                        Text(text = "Comments")
+                                    }
+                                )
 
-                    itemsIndexed(mainViewModelPractice.chat.conversation){ index, item ->  
-                        Text(text = item.message)
-                    }
+                                Spacer(modifier = Modifier.padding(8.dp))
+                            }
 
+                            itemsIndexed(mainViewModelPractice.chat.conversation){ index, item ->
+                                Row(
+                                    horizontalArrangement = if (auth.currentUser?.uid.toString().equals(item.sentBy.id)) Arrangement.End else Arrangement.Start,
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    content = {
+
+                                        Surface(
+                                            modifier = Modifier
+                                                .padding(8.dp, 4.dp)
+                                                .fillMaxWidth(0.8f),
+                                            shape = RoundedCornerShape(8.dp),
+                                            elevation = 2.dp,
+                                            content = {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .padding(4.dp)
+                                                        .fillMaxSize(),
+                                                    content = {
+                                                        Image(
+                                                            painter = rememberAsyncImagePainter(
+                                                                model = Uri.parse(CurrentUser.currentUser.imgPath)
+                                                            ),
+                                                            contentDescription = "avatar",
+                                                            modifier = Modifier
+                                                                .size(40.dp)
+                                                                .clip(CircleShape)
+                                                                .border(1.dp, Color.Gray, CircleShape)
+                                                                .align(Alignment.CenterVertically),
+                                                            contentScale = ContentScale.Crop,
+
+                                                            )
+                                                        Spacer(modifier = Modifier.padding(5.dp))
+                                                        Column(
+                                                            modifier = Modifier
+                                                                .padding(4.dp)
+                                                                .fillMaxHeight()
+                                                                .fillMaxWidth(0.8f),
+                                                            verticalArrangement = Arrangement.Center,
+                                                            content = {
+                                                                Text(
+                                                                    text = item.message,
+                                                                    style = MaterialTheme.typography.subtitle1,
+                                                                    fontWeight = FontWeight.Bold,
+                                                                )
+                                                            }
+                                                        )
+                                                        Text(
+                                                            text = "${now()}",
+                                                            style = MaterialTheme.typography.caption,
+                                                            modifier = Modifier
+                                                                .padding(4.dp),
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    )
                 }
             )
         }
@@ -233,7 +322,7 @@ fun bottomAppBar(
                 content = {
 
                     OutlinedTextField(
-                        modifier = Modifier,
+                        modifier = Modifier.fillMaxWidth(0.8f),
                         value = value,
                         shape = RoundedCornerShape(30.dp),
                         onValueChange = {
@@ -280,10 +369,11 @@ fun bottomAppBar(
                                 Message(
                                     message = value,
                                     sentBy = CurrentUser.currentUser,
-                                    sentOn = "${now().dayOfYear}/${now().dayOfMonth}/${now().dayOfWeek}"
-
+                                    sentOn = "${now().dayOfMonth}/${now().dayOfWeek}/${now().dayOfYear}"
                                 )
                             )
+                            mainViewModelPractice.updateChat()
+                            onValueChageValue("")
                         }
                     )
                 }

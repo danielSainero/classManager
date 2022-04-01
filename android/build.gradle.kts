@@ -40,11 +40,28 @@ dependencies {
     implementation("androidx.compose.material:material:${rootProject.extra["compose_version"]}")
     implementation("androidx.compose.ui:ui-tooling-preview:${rootProject.extra["compose_version"]}")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
+    implementation("com.google.firebase:firebase-dynamic-links-ktx:21.0.1")
+    implementation("com.google.android.gms:play-services-appinvite:18.0.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
     debugImplementation("androidx.compose.ui:ui-tooling:${rootProject.extra["compose_version"]}")
 
+    //Camera
+    val activity_version = "1.4.0"
+    implementation("androidx.activity:activity:$activity_version")
+    implementation("androidx.activity:activity-ktx:$activity_version")
+    implementation("dev.chrisbanes.accompanist:accompanist-glide:0.4.2")
+    implementation("androidx.activity:activity-ktx:1.2.0-rc01")
+    implementation("androidx.fragment:fragment-ktx:1.3.0-rc02")
+
+    //Links
+    implementation(platform("com.google.firebase:firebase-bom:29.2.0"))
+
+    implementation("com.google.firebase:firebase-dynamic-links-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
     //Others
-    //implementation("io.getstream:stream-chat-android-ui-components:4.8.1")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.19.0")
+
 
 
     //Tests

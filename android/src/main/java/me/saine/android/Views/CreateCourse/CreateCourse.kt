@@ -1,6 +1,5 @@
 package me.saine.android.Views.CreateCourse
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,22 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
-import com.example.classmanegerandroid.Navigation.Destinations
-import me.saine.android.Classes.CurrentUser
-import me.saine.android.Classes.CurrentUser.Companion.auth
-import me.saine.android.Classes.CurrentUser.Companion.db
 import me.saine.android.Views.ViewsItems.createRowList
 import me.saine.android.Views.ViewsItems.dropDownMenuWithAction
-import me.saine.android.dataClasses.ListItem
 
 @Composable
 fun MainCreateCourse(
@@ -158,38 +148,12 @@ fun MainCreateCourse(
                                 modifier = Modifier
                                     .padding(start = 10.dp, end = 20.dp),
                                 onClick = {
-                                    var mySelectedClasses = mutableListOf<String>()
-                                    mainViewModelCreateCourse.allListItems.forEach {
-                                        if (it.isSelected)  mySelectedClasses.add(it.id)
-                                    }
-
-                                    val document = db.collection("course").document()
-                                    val idOfDocument = document.id
-
-                                    document.set(
-                                            hashMapOf(
-                                                "admins" to  mutableListOf<String>("${auth.currentUser?.uid}"),
-                                                "classes" to mySelectedClasses,
-                                                "description" to textOfDescription,
-                                                "name" to textNameOfCourse,
-                                            )
-                                        ).addOnSuccessListener {
-                                            CurrentUser.currentUser.courses.add(idOfDocument)
-                                            db.collection("users")
-                                                .document(auth.currentUser?.uid.toString())
-                                                .set(CurrentUser.currentUser).addOnSuccessListener {
-                                                    CurrentUser.updateDates()
-                                                    Toast.makeText(context,"El curso ha sido creado correctamente",Toast.LENGTH_SHORT).show()
-                                                    navController.navigate(Destinations.MainAppView.route)
-                                                }
-                                        }
-                                    mySelectedClasses.forEach{
-                                        db.collection("classes")
-                                            .document(it)
-                                            .update(
-                                                "idOfCourse" , idOfDocument
-                                            )
-                                    }
+                                    mainViewModelCreateCourse.createCourse(
+                                        textOfDescription = textOfDescription,
+                                        textNameOfCourse = textNameOfCourse,
+                                        navController = navController,
+                                        context = context
+                                    )
                                 },
                                 content = {
                                     Text(text = "Crear")

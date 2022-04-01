@@ -1,13 +1,7 @@
 package me.saine.android.Views.CreateClass
 
-import me.saine.android.Views.CreateCourse.MainViewModelCreateCourse
-
-import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -16,24 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
-import com.example.classmanegerandroid.Navigation.Destinations
 import me.saine.android.Classes.CurrentUser
-import me.saine.android.Classes.CurrentUser.Companion.auth
-import me.saine.android.Classes.CurrentUser.Companion.db
 import me.saine.android.Views.ViewsItems.createRowList
-import me.saine.android.Views.ViewsItems.dropDownMenuWithAction
-import me.saine.android.Views.ViewsItems.selectedDropDownMenu
-import me.saine.android.dataClasses.Course
-import me.saine.android.dataClasses.ListItem
+import me.saine.android.data.remote.Course
 
 @Composable
 fun MainCreateClass(
@@ -157,36 +140,13 @@ fun MainCreateClass(
                                 modifier = Modifier
                                     .padding(start = 10.dp, end = 20.dp),
                                 onClick = {
-
-                                    val document = db.collection("classes").document()
-                                    val idOfDocument = document.id
-                                    document.set(
-                                        hashMapOf(
-                                            "admins" to  mutableListOf("${auth.currentUser?.uid}"),
-                                            "idPractices" to mutableListOf<String>(),
-                                            "description" to textDescription,
-                                            "name" to textNameOfClass,
-                                            "idOfCourse" to itemSelectedCurse.id
-                                        )
-                                    ).addOnSuccessListener {
-                                        if(!itemSelectedCurse.name.equals("Sin asignar") ) {
-                                            itemSelectedCurse.classes.add(idOfDocument)
-                                            db.collection("course")
-                                                .document(itemSelectedCurse.id)
-                                                .set(itemSelectedCurse)
-                                        }
-
-                                        CurrentUser.currentUser.classes.add(idOfDocument)
-
-                                        db.collection("users")
-                                            .document(auth.currentUser?.uid.toString())
-                                            .set(CurrentUser.currentUser)
-                                            .addOnSuccessListener {
-                                                CurrentUser.updateDates()
-                                                Toast.makeText(context,"El curso ha sido creado correctamente",Toast.LENGTH_SHORT).show()
-                                                navController.navigate(Destinations.MainAppView.route)
-                                            }
-                                    }
+                                    mainViewModelCreateClass.createClass(
+                                        navController = navController,
+                                        context = context,
+                                        textDescription = textDescription,
+                                        textNameOfClass = textNameOfClass,
+                                        itemSelectedCurse = itemSelectedCurse
+                                    )
                                 },
                                 content = {
                                     Text(text = "Crear")
